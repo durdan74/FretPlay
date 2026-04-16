@@ -192,22 +192,23 @@ export function BassNeck({ selectedString, selectedFret, onSelect }: BassNeckPro
             })}
 
             {['E', 'A', 'D', 'G'].map((label, index) => (
-              <Text
+              <View
                 key={`open-string-${label}`}
                 pointerEvents="none"
                 style={{
                   position: 'absolute',
-                  left: stringXs[index] - 12,
-                  top: fretHeight / 2 - 24,
-                  width: 24,
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontWeight: '700',
-                  color: 'white',
+                  left: stringXs[index] - 14,
+                  top: fretHeight / 2 - 30,
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: '#d92d20',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                {label}
-              </Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: 'white' }}>{label}</Text>
+              </View>
             ))}
 
             {/* Reperes visuels: ronds centraux sur les frettes 3, 5, 7, 9 */}
