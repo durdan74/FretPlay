@@ -1,52 +1,40 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
-
-import { BassNeck } from './bass/BassNeck';
-import { OPEN_STRING_NOTES } from './bass/constants';
-import { getNoteForPosition } from './bass/noteUtils';
-import { SelectionInfo } from './bass/SelectionInfo';
+import { router } from 'expo-router';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 export default function Index() {
-  const [selectedString, setSelectedString] = useState<number | null>(null);
-  const [selectedFret, setSelectedFret] = useState<number | null>(null);
-
-  const handleSelect = (stringNumber: number, fret: number) => {
-    setSelectedString(stringNumber);
-    setSelectedFret(fret);
-  };
-
-  const selectedNote =
-    selectedString !== null && selectedFret !== null
-      ? getNoteForPosition(selectedString, selectedFret)
-      : null;
-
-  const selectedOpenString =
-    selectedString !== null ? OPEN_STRING_NOTES[selectedString] : null;
-
   return (
     <View
       style={{
         flex: 1,
         backgroundColor: 'white',
         paddingTop: 64,
-        paddingBottom: 20,
+        paddingBottom: 24,
         paddingHorizontal: 16,
+        justifyContent: 'center',
       }}
     >
       <View
         style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'stretch',
+          alignItems: 'center',
+          gap: 20,
         }}
       >
-        <BassNeck selectedString={selectedString} selectedFret={selectedFret} onSelect={handleSelect} />
-        <SelectionInfo
-          selectedNote={selectedNote}
-          selectedString={selectedString}
-          selectedOpenString={selectedOpenString}
-          selectedFret={selectedFret}
-        />
+        <Text style={{ fontSize: 32, fontWeight: '700' }}>Menu principal</Text>
+
+        <Pressable
+          onPress={() => router.push('/(tabs)/jeu-1')}
+          style={{
+            minWidth: 180,
+            paddingVertical: 14,
+            paddingHorizontal: 18,
+            borderRadius: 12,
+            backgroundColor: '#1f6feb',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Jeu 1</Text>
+        </Pressable>
       </View>
     </View>
   );

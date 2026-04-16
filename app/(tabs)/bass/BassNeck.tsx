@@ -254,11 +254,11 @@ export function BassNeck({ selectedString, selectedFret, onSelect }: BassNeckPro
                 pointerEvents="none"
                 style={{
                   position: 'absolute',
-                  left: stringXs[4 - selectedString] - 9,
-                  top: selectedFret * fretHeight + fretHeight / 2 - 9,
-                  width: 18,
-                  height: 18,
-                  borderRadius: 9,
+                  left: stringXs[4 - selectedString] - 18,
+                  top: selectedFret * fretHeight + fretHeight / 2 - 18,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
                   backgroundColor: '#ffd966',
                   borderWidth: 2,
                   borderColor: 'black',
