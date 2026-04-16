@@ -61,7 +61,7 @@ export function BassNeck({ selectedString, selectedFret, onSelect }: BassNeckPro
       }}
     >
       <ScrollView
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           minHeight: neckContentHeight,
         }}
@@ -81,19 +81,17 @@ export function BassNeck({ selectedString, selectedFret, onSelect }: BassNeckPro
             }}
           >
             {Array.from({ length: NUMBER_OF_FRETS }).map((_, fretIndex) => {
-              if (fretIndex === 0) return null;
-
               return (
                 <View
                   key={`fret-number-${fretIndex}`}
                   style={{
                     position: 'absolute',
-                    top: fretIndex * fretHeight - 10,
+                    top: (fretIndex + 0.5) * fretHeight - 10,
                     width: '100%',
                     alignItems: 'center',
                   }}
                 >
-                  <Text style={{ fontSize: 16, fontWeight: '600' }}>{fretIndex - 1}</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '600' }}>{fretIndex}</Text>
                 </View>
               );
             })}
@@ -192,6 +190,25 @@ export function BassNeck({ selectedString, selectedFret, onSelect }: BassNeckPro
                 />
               );
             })}
+
+            {['E', 'A', 'D', 'G'].map((label, index) => (
+              <Text
+                key={`open-string-${label}`}
+                pointerEvents="none"
+                style={{
+                  position: 'absolute',
+                  left: stringXs[index] - 12,
+                  top: fretHeight / 2 - 24,
+                  width: 24,
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: 'white',
+                }}
+              >
+                {label}
+              </Text>
+            ))}
 
             {/* Reperes visuels: ronds centraux sur les frettes 3, 5, 7, 9 */}
             {[3, 5, 7, 9].map((fretMarker) => (
