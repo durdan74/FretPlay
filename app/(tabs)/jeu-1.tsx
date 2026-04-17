@@ -1,5 +1,6 @@
+import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { BassNeck } from './bass/BassNeck';
 import { OPEN_STRING_NOTES } from './bass/constants';
@@ -39,6 +40,26 @@ export default function Jeu1Screen() {
           alignItems: 'stretch',
         }}
       >
+        <Pressable
+          onPress={() => router.replace('/(tabs)/index')}
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            zIndex: 10,
+            width: 92,
+            paddingVertical: 8,
+            paddingHorizontal: 8,
+            borderRadius: 8,
+            backgroundColor: '#1f6feb',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: 'white', fontWeight: '700', textAlign: 'center' }}>
+            Menu{'\n'}principal
+          </Text>
+        </Pressable>
+
         <BassNeck selectedString={selectedString} selectedFret={selectedFret} onSelect={handleSelect} />
         <SelectionInfo
           selectedNote={selectedNote}
