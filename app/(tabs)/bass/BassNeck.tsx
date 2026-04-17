@@ -1,14 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { LayoutChangeEvent, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useNotation } from '@/contexts/notation-context';
+
 import {
   FRET_NUMBER_COLUMN_WIDTH,
   NUMBER_OF_FRETS,
   NUMBER_OF_STRINGS,
+  OPEN_STRING_NOTES,
+  OPEN_STRING_NOTES_EN,
   SIDE_INSET,
   STRING_WIDTHS,
 } from './constants';
 import { getClosestStringFromX } from './noteUtils';
+
+/** Ordre d’affichage gauche → droite : corde 4 (grave) … corde 1 (aiguë), comme `stringXs`. */
+const OPEN_STRING_DISPLAY_ORDER = [4, 3, 2, 1] as const;
 
 type BassNeckProps = {
   selectedString: number | null;
@@ -18,8 +25,17 @@ type BassNeckProps = {
 };
 
 export function BassNeck({ selectedString, selectedFret, selectedResult, onSelect }: BassNeckProps) {
+  const { notation } = useNotation();
   const [availableHeight, setAvailableHeight] = useState(0);
   const [neckWidth, setNeckWidth] = useState(0);
+
+  const openStringLabels = useMemo(
+    () =>
+      OPEN_STRING_DISPLAY_ORDER.map((stringNum) =>
+        notation === 'european' ? OPEN_STRING_NOTES[stringNum] : OPEN_STRING_NOTES_EN[stringNum],
+      ),
+    [notation],
+  );
 
   const handleMainLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
@@ -192,9 +208,9 @@ export function BassNeck({ selectedString, selectedFret, selectedResult, onSelec
               );
             })}
 
-            {['E', 'A', 'D', 'G'].map((label, index) => (
+            {openStringLabels.map((label, index) => (
               <View
-                key={`open-string-${label}`}
+                key={`open-string-${index}`}
                 pointerEvents="none"
                 style={{
                   position: 'absolute',
@@ -208,7 +224,14 @@ export function BassNeck({ selectedString, selectedFret, selectedResult, onSelec
                   justifyContent: 'center',
                 }}
               >
-                <Text style={{ fontSize: 14, fontWeight: '700', color: 'white' }}>{label}</Text>
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.65}
+                  style={{ fontSize: 14, fontWeight: '700', color: 'white', maxWidth: 26, textAlign: 'center' }}
+                >
+                  {label}
+                </Text>
               </View>
             ))}
 

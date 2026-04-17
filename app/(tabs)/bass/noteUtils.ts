@@ -1,12 +1,33 @@
-import { NOTES, OPEN_STRING_NOTES } from './constants';
+import {
+  CHROMATIC_SPELLINGS,
+  CHROMATIC_SPELLINGS_EN,
+  NOTE_TO_PITCH_CLASS,
+  OPEN_STRING_NOTES,
+  OPEN_STRING_NOTES_EN,
+  type NotationSystem,
+} from './constants';
 
-export function getNoteForPosition(stringNumber: number, fret: number): string {
-  const openNote = OPEN_STRING_NOTES[stringNumber];
-  const startIndex = NOTES.indexOf(openNote);
+export function getPitchClass(noteName: string): number {
+  const pc = NOTE_TO_PITCH_CLASS[noteName];
+  if (pc === undefined) {
+    throw new Error(`Note inconnue : ${noteName}`);
+  }
+  return pc;
+}
+
+export function samePitch(a: string, b: string): boolean {
+  return getPitchClass(a) === getPitchClass(b);
+}
+
+export function getNoteForPosition(stringNumber: number, fret: number, notation: NotationSystem): string {
+  const chromatic = (notation === 'european' ? CHROMATIC_SPELLINGS : CHROMATIC_SPELLINGS_EN) as readonly string[];
+  const openMap = notation === 'european' ? OPEN_STRING_NOTES : OPEN_STRING_NOTES_EN;
+  const openNote = openMap[stringNumber];
+  const startIndex = chromatic.indexOf(openNote as string);
 
   if (startIndex === -1) return 'Inconnue';
 
-  return NOTES[(startIndex + fret) % 12];
+  return chromatic[(startIndex + fret) % 12];
 }
 
 export function getClosestStringFromX(x: number, stringXs: number[]): number {

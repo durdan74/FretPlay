@@ -6,8 +6,15 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export default function TabLayout() {
+import { ParametresReturnProvider, useParametresReturn, type ReturnableTabName } from './parametres-return-context';
+
+function isReturnableTabName(name: string | undefined): name is ReturnableTabName {
+  return name === 'index' || name === 'jeu-1';
+}
+
+function TabsNavigator() {
   const colorScheme = useColorScheme();
+  const { setReturnTab } = useParametresReturn();
 
   return (
     <Tabs
@@ -15,7 +22,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -31,12 +39,30 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="parametres"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Paramètres',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
         }}
+        listeners={({ navigation }) => ({
+          tabPress: () => {
+            const state = navigation.getState();
+            const route = state.routes[state.index];
+            const name = route?.name;
+            if (isReturnableTabName(name)) {
+              setReturnTab(name);
+            }
+          },
+        })}
       />
     </Tabs>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <ParametresReturnProvider>
+      <TabsNavigator />
+    </ParametresReturnProvider>
   );
 }

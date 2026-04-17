@@ -1,28 +1,56 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Modal, Pressable, Text, View } from 'react-native';
+
+import { getNotesPoolForNotation } from '@/app/(tabs)/bass/constants';
+import { getDefaultNotationFromLocale, useNotation } from '@/contexts/notation-context';
 
 import { BassNeck } from './bass/BassNeck';
-import { NOTES } from './bass/constants';
-import { getNoteForPosition } from './bass/noteUtils';
+import { getNoteForPosition, samePitch } from './bass/noteUtils';
 
 const TOTAL_ATTEMPTS = 10;
 
-function getRandomNote(excluding?: string): string {
-  const filteredNotes = excluding ? NOTES.filter((note) => note !== excluding) : NOTES;
-  const randomIndex = Math.floor(Math.random() * filteredNotes.length);
-  return filteredNotes[randomIndex];
+function getRandomNote(pool: string[], excluding?: string): string {
+  const filtered =
+    excluding !== undefined ? pool.filter((note) => !samePitch(note, excluding)) : pool;
+  const randomIndex = Math.floor(Math.random() * filtered.length);
+  return filtered[randomIndex];
+}
+
+function getScoreEncouragementMessage(found: number): string {
+  if (found <= 1) {
+    return 'Tu ne peux que progresser ! Allez ! Courage ! Continue à jouer !';
+  }
+  if (found <= 4) {
+    return 'Ca avance, continue pour progresser';
+  }
+  if (found <= 7) {
+    return "Pas mal ! Continue pour t'améliorer";
+  }
+  if (found <= 9) {
+    return 'Presque parfait, on y est presque !';
+  }
+  return 'Bravo, tu connais parfaitement tes notes ! Continue pour confirmer.';
 }
 
 export default function Jeu1Screen() {
+  const { notation, isHydrated } = useNotation();
+  const notesPool = useMemo(() => getNotesPoolForNotation(notation), [notation]);
+
   const [selectedString, setSelectedString] = useState<number | null>(null);
   const [selectedFret, setSelectedFret] = useState<number | null>(null);
   const [selectedResult, setSelectedResult] = useState<'correct' | 'wrong' | null>(null);
-  const [targetNote, setTargetNote] = useState<string>(() => getRandomNote());
+  const [targetNote, setTargetNote] = useState<string>(() =>
+    getRandomNote(getNotesPoolForNotation(getDefaultNotationFromLocale())),
+  );
   const [foundCount, setFoundCount] = useState(0);
   const [missedCount, setMissedCount] = useState(0);
   const [attemptCount, setAttemptCount] = useState(0);
   const [resultEmoji, setResultEmoji] = useState<string | null>(null);
+  const [endDialogDismissed, setEndDialogDismissed] = useState(false);
   const emojiTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wasHydratedRef = useRef(false);
+  const lastNotationRef = useRef(notation);
 
   useEffect(() => {
     return () => {
@@ -31,6 +59,40 @@ export default function Jeu1Screen() {
       }
     };
   }, []);
+
+  const resetGame = useCallback(() => {
+    setSelectedString(null);
+    setSelectedFret(null);
+    setSelectedResult(null);
+    setFoundCount(0);
+    setMissedCount(0);
+    setAttemptCount(0);
+    setTargetNote(getRandomNote(notesPool));
+    setResultEmoji(null);
+    setEndDialogDismissed(false);
+    if (emojiTimeoutRef.current) {
+      clearTimeout(emojiTimeoutRef.current);
+      emojiTimeoutRef.current = null;
+    }
+  }, [notesPool]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    if (!wasHydratedRef.current) {
+      wasHydratedRef.current = true;
+      if (getDefaultNotationFromLocale() !== notation) {
+        resetGame();
+      }
+      lastNotationRef.current = notation;
+      return;
+    }
+
+    if (lastNotationRef.current !== notation) {
+      resetGame();
+      lastNotationRef.current = notation;
+    }
+  }, [isHydrated, notation, resetGame]);
 
   const showResultEmoji = (emoji: string) => {
     if (emojiTimeoutRef.current) {
@@ -49,8 +111,8 @@ export default function Jeu1Screen() {
     setSelectedString(stringNumber);
     setSelectedFret(fret);
 
-    const playedNote = getNoteForPosition(stringNumber, fret);
-    const isCorrect = playedNote === targetNote;
+    const playedNote = getNoteForPosition(stringNumber, fret, notation);
+    const isCorrect = samePitch(playedNote, targetNote);
     setSelectedResult(isCorrect ? 'correct' : 'wrong');
     showResultEmoji(isCorrect ? '👍' : '😬');
 
@@ -58,29 +120,16 @@ export default function Jeu1Screen() {
 
     if (isCorrect) {
       setFoundCount((prev) => prev + 1);
-      setTargetNote((prev) => getRandomNote(prev));
+      setTargetNote((prev) => getRandomNote(notesPool, prev));
       return;
     }
 
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setMissedCount((prev) => prev + 1);
   };
 
-  const resetGame = () => {
-    setSelectedString(null);
-    setSelectedFret(null);
-    setSelectedResult(null);
-    setFoundCount(0);
-    setMissedCount(0);
-    setAttemptCount(0);
-    setTargetNote(getRandomNote());
-    setResultEmoji(null);
-    if (emojiTimeoutRef.current) {
-      clearTimeout(emojiTimeoutRef.current);
-      emojiTimeoutRef.current = null;
-    }
-  };
-
   const isGameFinished = attemptCount >= TOTAL_ATTEMPTS;
+  const showEndDialog = isGameFinished && !endDialogDismissed;
 
   return (
     <View
@@ -109,6 +158,7 @@ export default function Jeu1Screen() {
         <View
           style={{
             width: '35%',
+            alignSelf: 'stretch',
             justifyContent: 'flex-start',
             paddingLeft: 8,
             paddingTop: 24,
@@ -121,10 +171,14 @@ export default function Jeu1Screen() {
           </Text>
 
           <Text style={{ fontSize: 18 }}>Trouvées :</Text>
-          <Text style={{ fontSize: 18, marginBottom: 12 }}>{foundCount}</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#16a34a', marginBottom: 12 }}>
+            {foundCount}
+          </Text>
 
           <Text style={{ fontSize: 18 }}>Ratées :</Text>
-          <Text style={{ fontSize: 18, marginBottom: 20 }}>{missedCount}</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#dc2626', marginBottom: 20 }}>
+            {missedCount}
+          </Text>
 
           <View
             style={{
@@ -157,21 +211,66 @@ export default function Jeu1Screen() {
           )}
 
           {isGameFinished && (
-            <Pressable
-              onPress={resetGame}
+            <View
               style={{
-                alignSelf: 'flex-start',
-                paddingVertical: 10,
-                paddingHorizontal: 12,
-                borderRadius: 8,
-                backgroundColor: '#1f6feb',
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                alignItems: 'center',
               }}
             >
-              <Text style={{ color: 'white', fontWeight: '700' }}>Rejouer</Text>
-            </Pressable>
+              <Pressable
+                onPress={resetGame}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 16,
+                  borderRadius: 8,
+                  backgroundColor: '#1f6feb',
+                }}
+              >
+                <Text style={{ color: 'white', fontWeight: '700' }}>Rejouer</Text>
+              </Pressable>
+            </View>
           )}
         </View>
       </View>
+
+      <Modal transparent visible={showEndDialog} animationType="fade">
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            paddingHorizontal: 24,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: 'white',
+              borderRadius: 14,
+              paddingVertical: 22,
+              paddingHorizontal: 20,
+            }}
+          >
+            <Text style={{ fontSize: 18, lineHeight: 26, marginBottom: 22, textAlign: 'center' }}>
+              {getScoreEncouragementMessage(foundCount)}
+            </Text>
+            <Pressable
+              onPress={() => setEndDialogDismissed(true)}
+              style={{
+                alignSelf: 'center',
+                paddingVertical: 12,
+                paddingHorizontal: 32,
+                borderRadius: 10,
+                backgroundColor: '#1f6feb',
+              }}
+            >
+              <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
