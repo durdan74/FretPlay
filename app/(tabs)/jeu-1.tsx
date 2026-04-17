@@ -1,27 +1,60 @@
-import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { BassNeck } from './bass/BassNeck';
-import { OPEN_STRING_NOTES } from './bass/constants';
+import { NOTES } from './bass/constants';
 import { getNoteForPosition } from './bass/noteUtils';
-import { SelectionInfo } from './bass/SelectionInfo';
+
+const TOTAL_ATTEMPTS = 10;
+
+function getRandomNote(excluding?: string): string {
+  const filteredNotes = excluding ? NOTES.filter((note) => note !== excluding) : NOTES;
+  const randomIndex = Math.floor(Math.random() * filteredNotes.length);
+  return filteredNotes[randomIndex];
+}
 
 export default function Jeu1Screen() {
   const [selectedString, setSelectedString] = useState<number | null>(null);
   const [selectedFret, setSelectedFret] = useState<number | null>(null);
+  const [targetNote, setTargetNote] = useState<string>(() => getRandomNote());
+  const [foundCount, setFoundCount] = useState(0);
+  const [missedCount, setMissedCount] = useState(0);
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [feedback, setFeedback] = useState<string>('Trouve cette note sur la basse');
 
   const handleSelect = (stringNumber: number, fret: number) => {
+    if (attemptCount >= TOTAL_ATTEMPTS) return;
+
     setSelectedString(stringNumber);
     setSelectedFret(fret);
+
+    const playedNote = getNoteForPosition(stringNumber, fret);
+    const isCorrect = playedNote === targetNote;
+
+    setAttemptCount((prev) => prev + 1);
+
+    if (isCorrect) {
+      setFoundCount((prev) => prev + 1);
+      setFeedback('Bravo ! Bonne note.');
+      setTargetNote((prev) => getRandomNote(prev));
+      return;
+    }
+
+    setMissedCount((prev) => prev + 1);
+    setFeedback(`Raté : tu as joué ${playedNote}`);
   };
 
-  const selectedNote =
-    selectedString !== null && selectedFret !== null
-      ? getNoteForPosition(selectedString, selectedFret)
-      : null;
+  const resetGame = () => {
+    setSelectedString(null);
+    setSelectedFret(null);
+    setFoundCount(0);
+    setMissedCount(0);
+    setAttemptCount(0);
+    setTargetNote(getRandomNote());
+    setFeedback('Trouve cette note sur la basse');
+  };
 
-  const selectedOpenString = selectedString !== null ? OPEN_STRING_NOTES[selectedString] : null;
+  const isGameFinished = attemptCount >= TOTAL_ATTEMPTS;
 
   return (
     <View
@@ -40,33 +73,41 @@ export default function Jeu1Screen() {
           alignItems: 'stretch',
         }}
       >
-        <Pressable
-          onPress={() => router.replace('/(tabs)/index')}
+        <BassNeck selectedString={selectedString} selectedFret={selectedFret} onSelect={handleSelect} />
+
+        <View
           style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            zIndex: 10,
-            width: 92,
-            paddingVertical: 8,
-            paddingHorizontal: 8,
-            borderRadius: 8,
-            backgroundColor: '#1f6feb',
-            alignItems: 'center',
+            width: '35%',
+            justifyContent: 'center',
+            paddingLeft: 8,
           }}
         >
-          <Text style={{ color: 'white', fontWeight: '700', textAlign: 'center' }}>
-            Menu{'\n'}principal
-          </Text>
-        </Pressable>
+          <Text style={{ fontSize: 18, marginBottom: 8 }}>Note à trouver</Text>
+          <Text style={{ fontSize: 42, fontWeight: '800', marginBottom: 16 }}>{targetNote}</Text>
 
-        <BassNeck selectedString={selectedString} selectedFret={selectedFret} onSelect={handleSelect} />
-        <SelectionInfo
-          selectedNote={selectedNote}
-          selectedString={selectedString}
-          selectedOpenString={selectedOpenString}
-          selectedFret={selectedFret}
-        />
+          <Text style={{ fontSize: 18, marginBottom: 8 }}>
+            Essais : {attemptCount}/{TOTAL_ATTEMPTS}
+          </Text>
+          <Text style={{ fontSize: 18, marginBottom: 8 }}>Trouvées : {foundCount}</Text>
+          <Text style={{ fontSize: 18, marginBottom: 16 }}>Ratées : {missedCount}</Text>
+
+          <Text style={{ fontSize: 16, marginBottom: 16 }}>{feedback}</Text>
+
+          {isGameFinished && (
+            <Pressable
+              onPress={resetGame}
+              style={{
+                alignSelf: 'flex-start',
+                paddingVertical: 10,
+                paddingHorizontal: 12,
+                borderRadius: 8,
+                backgroundColor: '#1f6feb',
+              }}
+            >
+              <Text style={{ color: 'white', fontWeight: '700' }}>Rejouer</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
     </View>
   );
