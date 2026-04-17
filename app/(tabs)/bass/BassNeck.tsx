@@ -13,10 +13,11 @@ import { getClosestStringFromX } from './noteUtils';
 type BassNeckProps = {
   selectedString: number | null;
   selectedFret: number | null;
+  selectedResult: 'correct' | 'wrong' | null;
   onSelect: (stringNumber: number, fret: number) => void;
 };
 
-export function BassNeck({ selectedString, selectedFret, onSelect }: BassNeckProps) {
+export function BassNeck({ selectedString, selectedFret, selectedResult, onSelect }: BassNeckProps) {
   const [availableHeight, setAvailableHeight] = useState(0);
   const [neckWidth, setNeckWidth] = useState(0);
 
@@ -259,7 +260,7 @@ export function BassNeck({ selectedString, selectedFret, onSelect }: BassNeckPro
                   width: 36,
                   height: 36,
                   borderRadius: 18,
-                  backgroundColor: '#ffd966',
+                  backgroundColor: selectedResult === 'correct' ? '#22c55e' : '#ef4444',
                   borderWidth: 2,
                   borderColor: 'black',
                 }}
