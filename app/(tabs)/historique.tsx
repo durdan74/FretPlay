@@ -3,12 +3,23 @@ import { router, useLocalSearchParams, type Href } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useNotation } from '@/contexts/notation-context';
+import { fillTemplate } from '@/lib/i18n/template';
+import type { UiLanguage } from '@/lib/i18n/types';
 import { loadGameHistory, type GameKind, type GameSessionRecord } from '@/storage/gameHistory';
 
-function formatDate(iso: string): string {
+function localeTagForUi(lang: UiLanguage): string {
+  if (lang === 'fr') return 'fr-FR';
+  if (lang === 'es') return 'es-ES';
+  if (lang === 'de') return 'de-DE';
+  if (lang === 'it') return 'it-IT';
+  return 'en-GB';
+}
+
+function formatDate(iso: string, uiLanguage: UiLanguage): string {
   try {
     const d = new Date(iso);
-    return d.toLocaleString('fr-FR', {
+    return d.toLocaleString(localeTagForUi(uiLanguage), {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -18,10 +29,6 @@ function formatDate(iso: string): string {
   } catch {
     return iso;
   }
-}
-
-function notationLabel(n: GameSessionRecord['notation']): string {
-  return n === 'european' ? 'Européen' : 'Anglo-saxon';
 }
 
 function parseGameKind(raw: string | string[] | undefined): GameKind {
@@ -36,6 +43,7 @@ function filterByKind(sessions: GameSessionRecord[], kind: GameKind): GameSessio
 export default function HistoriqueScreen() {
   const { jeu } = useLocalSearchParams<{ jeu?: string }>();
   const gameKind = useMemo(() => parseGameKind(jeu), [jeu]);
+  const { t, uiLanguage } = useNotation();
 
   const [sessions, setSessions] = useState<GameSessionRecord[]>([]);
 
@@ -50,7 +58,7 @@ export default function HistoriqueScreen() {
   );
 
   const filtered = useMemo(() => filterByKind(sessions, gameKind), [sessions, gameKind]);
-  const gameTitle = gameKind === 'jeu-2' ? 'Trouve la case' : 'Note sur le manche';
+  const gameTitle = gameKind === 'jeu-2' ? t('historiqueSubtitleFindCase') : t('historiqueSubtitleNeck');
   const gameHref = useMemo<Href>(
     () => (gameKind === 'jeu-2' ? '/(tabs)/jeu-2' : '/(tabs)/jeu-1'),
     [gameKind],
@@ -59,6 +67,21 @@ export default function HistoriqueScreen() {
   const retourAuJeu = useCallback(() => {
     router.replace(gameHref);
   }, [gameHref]);
+
+  const formatSessionLine = useCallback(
+    (s: GameSessionRecord) => {
+      const notation =
+        s.notation === 'european' ? t('notationSystemEuropean') : t('notationSystemAnglo');
+      return fillTemplate(t('historiqueRow'), {
+        notation,
+        found: s.found,
+        attempts: s.attempts,
+        missed: s.missed,
+        sec: (s.durationMs / 1000).toFixed(1),
+      });
+    },
+    [t],
+  );
 
   return (
     <View
@@ -78,7 +101,7 @@ export default function HistoriqueScreen() {
           marginBottom: 8,
         }}
       >
-        <Text style={{ fontSize: 26, fontWeight: '700' }}>Historique</Text>
+        <Text style={{ fontSize: 26, fontWeight: '700' }}>{t('historiqueTitle')}</Text>
         <Pressable
           onPress={retourAuJeu}
           style={{
@@ -88,7 +111,7 @@ export default function HistoriqueScreen() {
             backgroundColor: '#1f6feb',
           }}
         >
-          <Text style={{ color: 'white', fontSize: 16, fontWeight: '700' }}>Retour au jeu</Text>
+          <Text style={{ color: 'white', fontSize: 16, fontWeight: '700' }}>{t('historiqueBackToGame')}</Text>
         </Pressable>
       </View>
 
@@ -96,7 +119,7 @@ export default function HistoriqueScreen() {
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {filtered.length === 0 ? (
-          <Text style={{ fontSize: 16, color: '#666' }}>Aucune partie enregistrée pour le moment.</Text>
+          <Text style={{ fontSize: 16, color: '#666' }}>{t('historiqueEmpty')}</Text>
         ) : (
           filtered.map((s) => (
             <View
@@ -109,11 +132,10 @@ export default function HistoriqueScreen() {
                 backgroundColor: '#f4f4f5',
               }}
             >
-              <Text style={{ fontSize: 15, fontWeight: '600', marginBottom: 6 }}>{formatDate(s.playedAt)}</Text>
-              <Text style={{ fontSize: 14, color: '#444' }}>
-                {notationLabel(s.notation)} · {s.found}/{s.attempts} trouvées · {s.missed} ratées ·{' '}
-                {(s.durationMs / 1000).toFixed(1)} s
+              <Text style={{ fontSize: 15, fontWeight: '600', marginBottom: 6 }}>
+                {formatDate(s.playedAt, uiLanguage)}
               </Text>
+              <Text style={{ fontSize: 14, color: '#444' }}>{formatSessionLine(s)}</Text>
             </View>
           ))
         )}

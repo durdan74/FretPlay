@@ -1,11 +1,22 @@
 import { router, type Href } from 'expo-router';
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
 import { useNotation } from '@/contexts/notation-context';
+import type { TranslationKey } from '@/lib/i18n/strings';
+import type { UiLanguage } from '@/lib/i18n/types';
+import { UI_LANGUAGES } from '@/lib/i18n/types';
 
 import { useParametresReturn } from './parametres-return-context';
+
+const LANGUAGE_LABEL_KEYS: Record<UiLanguage, TranslationKey> = {
+  fr: 'languageFr',
+  en: 'languageEn',
+  es: 'languageEs',
+  de: 'languageDe',
+  it: 'languageIt',
+};
 
 function RadioRow({
   label,
@@ -95,7 +106,8 @@ function CheckRow({
 
 export default function ParametresScreen() {
   const { returnTab } = useParametresReturn();
-  const { notation, setNotation, indicateString, setIndicateString } = useNotation();
+  const { notation, setNotation, indicateString, setIndicateString, uiLanguage, setUiLanguage, t } = useNotation();
+  const [languageModalOpen, setLanguageModalOpen] = useState(false);
 
   const handleRetour = () => {
     const href: Href =
@@ -105,6 +117,11 @@ export default function ParametresScreen() {
 
   const setSystem = (value: NotationSystem) => {
     setNotation(value);
+  };
+
+  const pickLanguage = (lang: UiLanguage) => {
+    setUiLanguage(lang);
+    setLanguageModalOpen(false);
   };
 
   return (
@@ -117,35 +134,45 @@ export default function ParametresScreen() {
         paddingHorizontal: 16,
       }}
     >
-      <Text style={{ fontSize: 28, fontWeight: '700', marginBottom: 12 }}>Paramètres</Text>
+      <Text style={{ fontSize: 28, fontWeight: '700', marginBottom: 12 }}>{t('parametresTitle')}</Text>
 
-      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>Notation des notes</Text>
-      <Text style={{ fontSize: 14, color: '#555', marginBottom: 12 }}>
-        Par défaut, le choix suit la langue du téléphone (anglais → anglo-saxon, sinon européen). Tu peux
-        forcer l’un ou l’autre ci-dessous.
-      </Text>
+      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>{t('parametresLanguageTitle')}</Text>
+      <Pressable
+        onPress={() => setLanguageModalOpen(true)}
+        style={{
+          borderWidth: 1,
+          borderColor: '#ccc',
+          borderRadius: 10,
+          paddingVertical: 12,
+          paddingHorizontal: 14,
+          marginBottom: 28,
+          backgroundColor: '#fafafa',
+        }}
+      >
+        <Text style={{ fontSize: 17, color: '#111' }}>{t(LANGUAGE_LABEL_KEYS[uiLanguage])}</Text>
+      </Pressable>
+
+      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>{t('parametresNotationTitle')}</Text>
+      <Text style={{ fontSize: 14, color: '#555', marginBottom: 12 }}>{t('parametresNotationBody')}</Text>
 
       <View style={{ marginBottom: 28 }}>
         <RadioRow
-          label="Système européen (Do, Ré, Mi…)"
+          label={t('parametresNotationEu')}
           selected={notation === 'european'}
           onSelect={() => setSystem('european')}
         />
         <RadioRow
-          label="Système anglo-saxon (A, B, C…)"
+          label={t('parametresNotationAnglo')}
           selected={notation === 'anglo-saxon'}
           onSelect={() => setSystem('anglo-saxon')}
         />
       </View>
 
-      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>Difficulté</Text>
-      <Text style={{ fontSize: 14, color: '#555', marginBottom: 10 }}>
-        Si activé, la note doit être jouée sur la corde indiquée : la même hauteur sur une autre corde est
-        considérée comme une erreur.
-      </Text>
+      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>{t('parametresDifficultyTitle')}</Text>
+      <Text style={{ fontSize: 14, color: '#555', marginBottom: 10 }}>{t('parametresDifficultyBody')}</Text>
       <View style={{ marginBottom: 28 }}>
         <CheckRow
-          label="Indiquer la corde"
+          label={t('parametresIndicateString')}
           checked={indicateString}
           onToggle={() => setIndicateString(!indicateString)}
         />
@@ -161,8 +188,50 @@ export default function ParametresScreen() {
           backgroundColor: '#1f6feb',
         }}
       >
-        <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>Retour</Text>
+        <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{t('parametresRetour')}</Text>
       </Pressable>
+
+      <Modal transparent visible={languageModalOpen} animationType="fade" onRequestClose={() => setLanguageModalOpen(false)}>
+        <View style={{ flex: 1 }}>
+          <Pressable
+            style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.45)' }]}
+            onPress={() => setLanguageModalOpen(false)}
+          />
+          <View
+            pointerEvents="box-none"
+            style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}
+          >
+            <View
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 14,
+                paddingVertical: 16,
+                paddingHorizontal: 8,
+              }}
+            >
+              <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 12, paddingHorizontal: 12 }}>
+                {t('languagePickTitle')}
+              </Text>
+              {UI_LANGUAGES.map((lang) => (
+                <Pressable
+                  key={lang}
+                  onPress={() => pickLanguage(lang)}
+                  style={{
+                    paddingVertical: 14,
+                    paddingHorizontal: 12,
+                    borderRadius: 8,
+                    backgroundColor: uiLanguage === lang ? '#e8f0fe' : 'transparent',
+                  }}
+                >
+                  <Text style={{ fontSize: 17, fontWeight: uiLanguage === lang ? '700' : '500' }}>
+                    {t(LANGUAGE_LABEL_KEYS[lang])}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

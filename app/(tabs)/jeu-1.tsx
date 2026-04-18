@@ -9,6 +9,8 @@ import {
   type NotationSystem,
 } from '@/app/(tabs)/bass/constants';
 import { useNotation } from '@/contexts/notation-context';
+import { fillTemplate } from '@/lib/i18n/template';
+import { encouragementForFound } from '@/lib/i18n/strings';
 import { appendGameSession } from '@/storage/gameHistory';
 
 import { BassNeck } from './bass/BassNeck';
@@ -40,24 +42,8 @@ function pickRandomStringTarget(
   return { note: getNoteForPosition(4, 0, notation), stringNum: 4 };
 }
 
-function getScoreEncouragementMessage(found: number): string {
-  if (found <= 1) {
-    return 'Tu ne peux que progresser ! Allez ! Courage ! Continue à jouer !';
-  }
-  if (found <= 4) {
-    return 'Ca avance, continue pour progresser';
-  }
-  if (found <= 7) {
-    return "Pas mal ! Continue pour t'améliorer";
-  }
-  if (found <= 9) {
-    return 'Génial, encore un petit effort et tu es au!';
-  }
-  return 'Bravo, tu connais parfaitement tes notes ! Continue pour confirmer.';
-}
-
 export default function Jeu1Screen() {
-  const { notation, isHydrated, indicateString } = useNotation();
+  const { notation, isHydrated, indicateString, t, uiLanguage } = useNotation();
   const notesPool = useMemo(() => getNotesPoolForNotation(notation), [notation]);
 
   const [selectedString, setSelectedString] = useState<number | null>(null);
@@ -95,9 +81,9 @@ export default function Jeu1Screen() {
     setMissedCount(0);
     setAttemptCount(0);
     if (indicateString) {
-      const t = pickRandomStringTarget(notation);
-      setTargetNote(t.note);
-      setTargetStringNum(t.stringNum);
+      const nextTarget = pickRandomStringTarget(notation);
+      setTargetNote(nextTarget.note);
+      setTargetStringNum(nextTarget.stringNum);
     } else {
       setTargetStringNum(null);
       setTargetNote(getRandomNote(notesPool));
@@ -175,9 +161,9 @@ export default function Jeu1Screen() {
     if (isCorrect) {
       setFoundCount((prev) => prev + 1);
       if (indicateString && targetStringNum !== null) {
-        const t = pickRandomStringTarget(notation, { note: targetNote, stringNum: targetStringNum });
-        setTargetNote(t.note);
-        setTargetStringNum(t.stringNum);
+        const nextTarget = pickRandomStringTarget(notation, { note: targetNote, stringNum: targetStringNum });
+        setTargetNote(nextTarget.note);
+        setTargetStringNum(nextTarget.stringNum);
       } else {
         setTargetNote((prev) => getRandomNote(notesPool, prev));
       }
@@ -250,22 +236,22 @@ export default function Jeu1Screen() {
                 backgroundColor: '#e8e8ea',
               }}
             >
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1a1a1a' }}>Historique</Text>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1a1a1a' }}>{t('historique')}</Text>
             </Pressable>
           </View>
 
           <View style={{ marginTop: 14 }}>
-            <Text style={{ fontSize: 18 }}>Essais :</Text>
+            <Text style={{ fontSize: 18 }}>{t('gameAttempts')}</Text>
             <Text style={{ fontSize: 18, marginBottom: 12 }}>
               {attemptCount}/{TOTAL_ATTEMPTS}
             </Text>
 
-            <Text style={{ fontSize: 18 }}>Trouvées :</Text>
+            <Text style={{ fontSize: 18 }}>{t('gameFound')}</Text>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#16a34a', marginBottom: 12 }}>
             {foundCount}
           </Text>
 
-          <Text style={{ fontSize: 18 }}>Ratées :</Text>
+          <Text style={{ fontSize: 18 }}>{t('gameMissed')}</Text>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#dc2626', marginBottom: 20 }}>
             {missedCount}
           </Text>
@@ -291,7 +277,7 @@ export default function Jeu1Screen() {
             </Text>
             {indicateString && targetStringNum !== null ? (
               <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginTop: 6, textAlign: 'center' }}>
-                corde de {getOpenStringLabel(targetStringNum, notation)}
+                {fillTemplate(t('jeu1StringLine'), { note: getOpenStringLabel(targetStringNum, notation) })}
               </Text>
             ) : null}
           </View>
@@ -330,7 +316,7 @@ export default function Jeu1Screen() {
                   backgroundColor: '#1f6feb',
                 }}
               >
-                <Text style={{ color: 'white', fontWeight: '700' }}>Rejouer</Text>
+                <Text style={{ color: 'white', fontWeight: '700' }}>{t('playAgain')}</Text>
               </Pressable>
             </View>
           )}
@@ -355,7 +341,7 @@ export default function Jeu1Screen() {
             }}
           >
             <Text style={{ fontSize: 18, lineHeight: 26, marginBottom: 22, textAlign: 'center' }}>
-              {getScoreEncouragementMessage(foundCount)}
+              {encouragementForFound(uiLanguage, foundCount)}
             </Text>
             <Pressable
               onPress={() => setEndDialogDismissed(true)}
@@ -367,7 +353,7 @@ export default function Jeu1Screen() {
                 backgroundColor: '#1f6feb',
               }}
             >
-              <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>OK</Text>
+              <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{t('ok')}</Text>
             </Pressable>
           </View>
         </View>

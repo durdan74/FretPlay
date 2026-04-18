@@ -1,6 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
+import type { TranslationKey } from '@/lib/i18n/strings';
+import { translate } from '@/lib/i18n/strings';
+import type { UiLanguage } from '@/lib/i18n/types';
 import {
   APP_SETTINGS_VERSION,
   getDefaultAppSettings,
@@ -16,6 +19,9 @@ type AppSettingsContextValue = {
   indicateString: boolean;
   setNotation: (value: NotationSystem) => void;
   setIndicateString: (value: boolean) => void;
+  uiLanguage: UiLanguage;
+  setUiLanguage: (value: UiLanguage) => void;
+  t: (key: TranslationKey) => string;
   isHydrated: boolean;
 };
 
@@ -67,15 +73,44 @@ export function NotationProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setUiLanguage = useCallback((value: UiLanguage) => {
+    setSettings((prev) => {
+      const next: AppSettings = {
+        ...prev,
+        settingsVersion: APP_SETTINGS_VERSION,
+        uiLanguage: value,
+      };
+      void saveAppSettings(next);
+      return next;
+    });
+  }, []);
+
+  const t = useCallback(
+    (key: TranslationKey) => translate(settings.uiLanguage, key),
+    [settings.uiLanguage],
+  );
+
   const value = useMemo(
     () => ({
       notation: settings.notation,
       indicateString: settings.indicateString,
       setNotation,
       setIndicateString,
+      uiLanguage: settings.uiLanguage,
+      setUiLanguage,
+      t,
       isHydrated,
     }),
-    [settings.notation, settings.indicateString, setNotation, setIndicateString, isHydrated],
+    [
+      settings.notation,
+      settings.indicateString,
+      settings.uiLanguage,
+      setNotation,
+      setIndicateString,
+      setUiLanguage,
+      t,
+      isHydrated,
+    ],
   );
 
   return <AppSettingsContext.Provider value={value}>{children}</AppSettingsContext.Provider>;

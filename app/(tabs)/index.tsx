@@ -2,7 +2,11 @@ import { router } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { useNotation } from '@/contexts/notation-context';
+
 export default function Index() {
+  const { t } = useNotation();
+
   return (
     <View
       style={{
@@ -20,7 +24,7 @@ export default function Index() {
           gap: 20,
         }}
       >
-        <Text style={{ fontSize: 32, fontWeight: '700' }}>Menu principal</Text>
+        <Text style={{ fontSize: 32, fontWeight: '700' }}>{t('menuTitle')}</Text>
 
         <Pressable
           onPress={() => router.push('/(tabs)/jeu-1')}
@@ -33,7 +37,7 @@ export default function Index() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Note sur le manche</Text>
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>{t('gameNameNeck')}</Text>
         </Pressable>
 
         <Pressable
@@ -47,7 +51,7 @@ export default function Index() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Trouve la case</Text>
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>{t('gameNameFindCase')}</Text>
         </Pressable>
       </View>
     </View>

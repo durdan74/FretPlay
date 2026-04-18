@@ -3,9 +3,11 @@ import { Directory, File, Paths } from 'expo-file-system';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
 import { getDefaultNotationFromLocale } from '@/lib/defaultNotation';
+import { getDefaultUiLanguageFromLocale } from '@/lib/defaultUiLanguage';
+import type { UiLanguage } from '@/lib/i18n/types';
 
 /** Incrémenter si la forme du JSON change (migration). */
-export const APP_SETTINGS_VERSION = 1;
+export const APP_SETTINGS_VERSION = 2;
 
 const APP_DIR_NAME = 'notesbasse';
 const SETTINGS_FILENAME = 'settings.json';
@@ -21,6 +23,8 @@ export type AppSettings = {
   notation: NotationSystem;
   /** Si true, la note à trouver est sur une corde imposée (difficulté). */
   indicateString: boolean;
+  /** Langue d’interface (indépendante de la notation des notes sur le manche). */
+  uiLanguage: UiLanguage;
 };
 
 export function getDefaultAppSettings(): AppSettings {
@@ -28,7 +32,15 @@ export function getDefaultAppSettings(): AppSettings {
     settingsVersion: APP_SETTINGS_VERSION,
     notation: getDefaultNotationFromLocale(),
     indicateString: false,
+    uiLanguage: getDefaultUiLanguageFromLocale(),
   };
+}
+
+function coerceUiLanguage(raw: unknown): UiLanguage | null {
+  if (raw === 'fr' || raw === 'en' || raw === 'es' || raw === 'de' || raw === 'it') {
+    return raw;
+  }
+  return null;
 }
 
 function parseSettingsJson(raw: string | null): AppSettings | null {
@@ -42,7 +54,8 @@ function parseSettingsJson(raw: string | null): AppSettings | null {
     const settingsVersion = typeof v === 'number' ? v : APP_SETTINGS_VERSION;
     const rawIndicate = (o as { indicateString?: unknown }).indicateString;
     const indicateString = typeof rawIndicate === 'boolean' ? rawIndicate : false;
-    return { settingsVersion, notation, indicateString };
+    const uiLanguage = coerceUiLanguage((o as { uiLanguage?: unknown }).uiLanguage) ?? getDefaultUiLanguageFromLocale();
+    return { settingsVersion, notation, indicateString, uiLanguage };
   } catch {
     return null;
   }
@@ -97,6 +110,7 @@ export async function loadAppSettings(): Promise<AppSettings> {
       settingsVersion: APP_SETTINGS_VERSION,
       notation: legacy,
       indicateString: false,
+      uiLanguage: getDefaultUiLanguageFromLocale(),
     };
     await saveAppSettings(migrated);
     await AsyncStorage.removeItem(LEGACY_NOTATION_KEY);

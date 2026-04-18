@@ -4,6 +4,7 @@ import React from 'react';
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
+import { useNotation } from '@/contexts/notation-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import { ParametresReturnProvider, useParametresReturn, type ReturnableTabName } from './parametres-return-context';
@@ -15,6 +16,7 @@ function isReturnableTabName(name: string | undefined): name is ReturnableTabNam
 function TabsNavigator() {
   const colorScheme = useColorScheme();
   const { setReturnTab } = useParametresReturn();
+  const { t } = useNotation();
 
   return (
     <Tabs
@@ -27,35 +29,35 @@ function TabsNavigator() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Menu',
+          title: t('tabMenu'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="jeu-1"
         options={{
-          title: 'Note sur le manche',
+          title: t('gameNameNeck'),
           href: null,
         }}
       />
       <Tabs.Screen
         name="jeu-2"
         options={{
-          title: 'Trouve la case',
+          title: t('gameNameFindCase'),
           href: null,
         }}
       />
       <Tabs.Screen
         name="historique"
         options={{
-          title: 'Historique',
+          title: t('tabHistory'),
           href: null,
         }}
       />
       <Tabs.Screen
         name="parametres"
         options={{
-          title: 'Paramètres',
+          title: t('tabSettings'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
         }}
         listeners={({ navigation }) => ({
