@@ -1,9 +1,12 @@
 import * as Haptics from 'expo-haptics';
 import { router, type Href } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Modal, Pressable, Text, useColorScheme, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getNotesPoolForNotation, NUMBER_OF_FRETS, type NotationSystem } from '@/app/(tabs)/bass/constants';
+import { StatBlock } from '@/components/game/StatBlock';
+import { GAME_ACCENT, GAME_FOUND, GAME_MISSED, getGameScreenTheme } from '@/constants/gameScreen';
 import { useNotation } from '@/contexts/notation-context';
 import { encouragementForFound } from '@/lib/i18n/strings';
 import { getDefaultAppSettings } from '@/storage/appSettings';
@@ -61,6 +64,10 @@ function createRound(notationArg: NotationSystem): RoundState {
 
 export default function Jeu2Screen() {
   const { notation, isHydrated, t, uiLanguage } = useNotation();
+  const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const theme = useMemo(() => getGameScreenTheme(isDark), [isDark]);
 
   const [round, setRound] = useState<RoundState>(() => createRound(getDefaultAppSettings().notation));
   const [pickedNote, setPickedNote] = useState<string | null>(null);
@@ -159,9 +166,9 @@ export default function Jeu2Screen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: 'white',
-        paddingTop: 64,
-        paddingBottom: 20,
+        backgroundColor: theme.pageBg,
+        paddingTop: Math.max(insets.top, 10) + 4,
+        paddingBottom: Math.max(insets.bottom, 12),
         paddingHorizontal: 16,
       }}
     >
@@ -188,144 +195,178 @@ export default function Jeu2Screen() {
           style={{
             width: '35%',
             alignSelf: 'stretch',
-            justifyContent: 'flex-start',
             paddingLeft: 8,
-            paddingTop: 12,
+            paddingTop: 4,
             position: 'relative',
           }}
         >
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 10 }}>
-            <Pressable
-              onPress={() => router.push('/(tabs)/historique?jeu=jeu-2' as Href)}
-              style={{
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                borderRadius: 8,
-                backgroundColor: '#e8e8ea',
-              }}
-            >
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1a1a1a' }}>{t('historique')}</Text>
-            </Pressable>
-          </View>
-
-          <View style={{ marginTop: 14 }}>
-            <Text style={{ fontSize: 18 }}>{t('gameAttempts')}</Text>
-            <Text style={{ fontSize: 18, marginBottom: 12 }}>
-              {attemptCount}/{TOTAL_ATTEMPTS}
-            </Text>
-
-            <Text style={{ fontSize: 18 }}>{t('gameFound')}</Text>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#16a34a', marginBottom: 12 }}>
-              {foundCount}
-            </Text>
-
-            <Text style={{ fontSize: 18 }}>{t('gameMissed')}</Text>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#dc2626', marginBottom: 20 }}>
-              {missedCount}
-            </Text>
-          </View>
-
           <View
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: 0,
-              right: 0,
-              transform: [{ translateY: -70 }],
-              alignItems: 'center',
-              paddingHorizontal: 4,
+              flex: 1,
+              backgroundColor: theme.panelBg,
+              borderRadius: 14,
+              borderWidth: 1,
+              borderColor: theme.panelBorder,
+              paddingHorizontal: 10,
+              paddingTop: 10,
+              paddingBottom: 10,
+              position: 'relative',
             }}
           >
-            {round.choices.map((note, idx) => {
-              const isPicked = pickedNote !== null && samePitch(note, pickedNote);
-              const isAnswer = samePitch(note, round.answerNote);
-              let color = '#111';
-              let fontWeight: '600' | '800' = '600';
-
-              if (revealedWrong) {
-                if (isAnswer) {
-                  color = '#16a34a';
-                  fontWeight = '800';
-                } else if (isPicked && !isAnswer) {
-                  color = '#dc2626';
-                  fontWeight = '800';
-                } else {
-                  color = '#111';
-                }
-              } else if (pickedNote !== null && isPicked && isAnswer) {
-                color = '#16a34a';
-                fontWeight = '800';
-              } else if (pickedNote !== null && isPicked && !isAnswer) {
-                color = '#dc2626';
-                fontWeight = '800';
-              }
-
-              const showThumb = pickedNote !== null && isPicked && isAnswer;
-              const showSad = revealedWrong && isPicked && !isAnswer;
-
-              return (
-                <Pressable
-                  key={`${idx}-${note}`}
-                  disabled={pickedNote !== null || attemptCount >= TOTAL_ATTEMPTS}
-                  onPress={() => onPickNote(note)}
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8, width: '100%' }}>
+              <Pressable
+                onPress={() => router.push('/(tabs)/historique?jeu=jeu-2' as Href)}
+                style={{
+                  paddingVertical: 6,
+                  paddingHorizontal: 8,
+                  borderRadius: 8,
+                  backgroundColor: theme.historiqueBtnBg,
+                  maxWidth: '100%',
+                }}
+              >
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.65}
                   style={{
-                    marginBottom: 10,
-                    paddingVertical: 10,
-                    paddingHorizontal: 14,
-                    borderRadius: 10,
-                    backgroundColor: '#f0f0f2',
-                    minWidth: 120,
-                    alignItems: 'center',
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: theme.historiqueBtnText,
+                    maxWidth: 118,
                   }}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={{ fontSize: 20, fontWeight, color }}>{note}</Text>
-                    {showThumb ? <Text style={{ fontSize: 22 }}>👍</Text> : null}
-                    {showSad ? <Text style={{ fontSize: 22 }}>😞</Text> : null}
-                  </View>
-                </Pressable>
-              );
-            })}
+                  {t('historique')}
+                </Text>
+              </Pressable>
+            </View>
 
-            <Pressable
-              onPress={onSuivant}
-              disabled={attemptCount >= TOTAL_ATTEMPTS}
-              style={{
-                marginTop: 8,
-                paddingVertical: 12,
-                paddingHorizontal: 20,
-                borderRadius: 10,
-                backgroundColor: attemptCount >= TOTAL_ATTEMPTS ? '#9ca3af' : '#1f6feb',
-                alignItems: 'center',
-              }}
-            >
-              <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{t('next')}</Text>
-            </Pressable>
-          </View>
+            <View style={{ marginTop: 6, marginBottom: 8 }}>
+              <StatBlock label={t('gameAttempts')} value={`${attemptCount}/${TOTAL_ATTEMPTS}`} theme={theme} />
+              <StatBlock label={t('gameFound')} value={foundCount} theme={theme} valueColor={GAME_FOUND} />
+              <StatBlock label={t('gameMissed')} value={missedCount} theme={theme} valueColor={GAME_MISSED} />
+            </View>
 
-          {isGameFinished && (
             <View
               style={{
                 position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 0,
+                top: '50%',
+                left: 6,
+                right: 6,
+                transform: [{ translateY: -72 }],
                 alignItems: 'center',
+                paddingHorizontal: 2,
               }}
             >
+              {round.choices.map((note, idx) => {
+                const isPicked = pickedNote !== null && samePitch(note, pickedNote);
+                const isAnswer = samePitch(note, round.answerNote);
+                let color = theme.statValue;
+                let fontWeight: '600' | '800' = '600';
+
+                if (revealedWrong) {
+                  if (isAnswer) {
+                    color = GAME_FOUND;
+                    fontWeight = '800';
+                  } else if (isPicked && !isAnswer) {
+                    color = GAME_MISSED;
+                    fontWeight = '800';
+                  } else {
+                    color = theme.statValue;
+                  }
+                } else if (pickedNote !== null && isPicked && isAnswer) {
+                  color = GAME_FOUND;
+                  fontWeight = '800';
+                } else if (pickedNote !== null && isPicked && !isAnswer) {
+                  color = GAME_MISSED;
+                  fontWeight = '800';
+                }
+
+                const showThumb = pickedNote !== null && isPicked && isAnswer;
+                const showSad = revealedWrong && isPicked && !isAnswer;
+
+                return (
+                  <Pressable
+                    key={`${idx}-${note}`}
+                    disabled={pickedNote !== null || attemptCount >= TOTAL_ATTEMPTS}
+                    onPress={() => onPickNote(note)}
+                    style={{
+                      marginBottom: 10,
+                      paddingVertical: 10,
+                      paddingHorizontal: 12,
+                      borderRadius: 12,
+                      backgroundColor: theme.choiceChipBg,
+                      borderWidth: 1,
+                      borderColor: theme.choiceChipBorder,
+                      minWidth: 118,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Text style={{ fontSize: 19, fontWeight, color }}>{note}</Text>
+                      {showThumb ? <Text style={{ fontSize: 22 }}>👍</Text> : null}
+                      {showSad ? <Text style={{ fontSize: 22 }}>😞</Text> : null}
+                    </View>
+                  </Pressable>
+                );
+              })}
+
               <Pressable
-                onPress={resetFullGame}
+                onPress={onSuivant}
+                disabled={attemptCount >= TOTAL_ATTEMPTS}
                 style={{
+                  marginTop: 18,
                   paddingVertical: 10,
-                  paddingHorizontal: 16,
-                  borderRadius: 8,
-                  backgroundColor: '#1f6feb',
+                  paddingHorizontal: 12,
+                  borderRadius: 12,
+                  backgroundColor: attemptCount >= TOTAL_ATTEMPTS ? '#9ca3af' : GAME_ACCENT,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: 118,
+                  width: 118,
+                  maxWidth: '100%',
                 }}
               >
-                <Text style={{ color: 'white', fontWeight: '700' }}>{t('playAgain')}</Text>
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.55}
+                  style={{
+                    color: 'white',
+                    fontSize: 19,
+                    fontWeight: '700',
+                    width: '100%',
+                    textAlign: 'center',
+                  }}
+                >
+                  {t('next')}
+                </Text>
               </Pressable>
             </View>
-          )}
+
+            {isGameFinished && (
+              <View
+                style={{
+                  position: 'absolute',
+                  left: 6,
+                  right: 6,
+                  bottom: 10,
+                  alignItems: 'center',
+                }}
+              >
+                <Pressable
+                  onPress={resetFullGame}
+                  style={{
+                    paddingVertical: 11,
+                    paddingHorizontal: 18,
+                    borderRadius: 10,
+                    backgroundColor: GAME_ACCENT,
+                  }}
+                >
+                  <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>{t('playAgain')}</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
@@ -340,13 +381,23 @@ export default function Jeu2Screen() {
         >
           <View
             style={{
-              backgroundColor: 'white',
+              backgroundColor: theme.modalCardBg,
               borderRadius: 14,
               paddingVertical: 22,
               paddingHorizontal: 20,
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.panelBorder,
             }}
           >
-            <Text style={{ fontSize: 18, lineHeight: 26, marginBottom: 22, textAlign: 'center' }}>
+            <Text
+              style={{
+                fontSize: 17,
+                lineHeight: 25,
+                marginBottom: 22,
+                textAlign: 'center',
+                color: theme.modalText,
+              }}
+            >
               {encouragementForFound(uiLanguage, foundCount)}
             </Text>
             <Pressable
@@ -356,7 +407,7 @@ export default function Jeu2Screen() {
                 paddingVertical: 12,
                 paddingHorizontal: 32,
                 borderRadius: 10,
-                backgroundColor: '#1f6feb',
+                backgroundColor: GAME_ACCENT,
               }}
             >
               <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{t('ok')}</Text>

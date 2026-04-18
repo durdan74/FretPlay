@@ -1,13 +1,16 @@
 import * as Haptics from 'expo-haptics';
 import { router, type Href } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Modal, Pressable, Text, useColorScheme, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   getNotesPoolForNotation,
   NUMBER_OF_FRETS,
   type NotationSystem,
 } from '@/app/(tabs)/bass/constants';
+import { StatBlock } from '@/components/game/StatBlock';
+import { GAME_ACCENT, GAME_FOUND, GAME_MISSED, getGameScreenTheme } from '@/constants/gameScreen';
 import { useNotation } from '@/contexts/notation-context';
 import { fillTemplate } from '@/lib/i18n/template';
 import { encouragementForFound } from '@/lib/i18n/strings';
@@ -44,6 +47,10 @@ function pickRandomStringTarget(
 
 export default function Jeu1Screen() {
   const { notation, isHydrated, indicateString, t, uiLanguage } = useNotation();
+  const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const theme = useMemo(() => getGameScreenTheme(isDark), [isDark]);
   const notesPool = useMemo(() => getNotesPoolForNotation(notation), [notation]);
 
   const [selectedString, setSelectedString] = useState<number | null>(null);
@@ -195,9 +202,9 @@ export default function Jeu1Screen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: 'white',
-        paddingTop: 64,
-        paddingBottom: 20,
+        backgroundColor: theme.pageBg,
+        paddingTop: Math.max(insets.top, 10) + 4,
+        paddingBottom: Math.max(insets.bottom, 12),
         paddingHorizontal: 16,
       }}
     >
@@ -220,106 +227,133 @@ export default function Jeu1Screen() {
           style={{
             width: '35%',
             alignSelf: 'stretch',
-            justifyContent: 'flex-start',
             paddingLeft: 8,
-            paddingTop: 12,
+            paddingTop: 4,
             position: 'relative',
           }}
         >
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 10 }}>
-            <Pressable
-              onPress={() => router.push('/(tabs)/historique?jeu=jeu-1' as Href)}
-              style={{
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                borderRadius: 8,
-                backgroundColor: '#e8e8ea',
-              }}
-            >
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1a1a1a' }}>{t('historique')}</Text>
-            </Pressable>
-          </View>
-
-          <View style={{ marginTop: 14 }}>
-            <Text style={{ fontSize: 18 }}>{t('gameAttempts')}</Text>
-            <Text style={{ fontSize: 18, marginBottom: 12 }}>
-              {attemptCount}/{TOTAL_ATTEMPTS}
-            </Text>
-
-            <Text style={{ fontSize: 18 }}>{t('gameFound')}</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#16a34a', marginBottom: 12 }}>
-            {foundCount}
-          </Text>
-
-          <Text style={{ fontSize: 18 }}>{t('gameMissed')}</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#dc2626', marginBottom: 20 }}>
-            {missedCount}
-          </Text>
-          </View>
-
           <View
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: 0,
-              right: 0,
-              transform: [{ translateY: indicateString ? -32 : -21 }],
-              alignItems: 'center',
-              paddingHorizontal: 4,
+              flex: 1,
+              backgroundColor: theme.panelBg,
+              borderRadius: 14,
+              borderWidth: 1,
+              borderColor: theme.panelBorder,
+              paddingHorizontal: 10,
+              paddingTop: 10,
+              paddingBottom: 10,
+              position: 'relative',
             }}
           >
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{ fontSize: indicateString ? 34 : 42, fontWeight: '800', textAlign: 'center' }}
-            >
-              {targetNote}
-            </Text>
-            {indicateString && targetStringNum !== null ? (
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginTop: 6, textAlign: 'center' }}>
-                {fillTemplate(t('jeu1StringLine'), { note: getOpenStringLabel(targetStringNum, notation) })}
-              </Text>
-            ) : null}
-          </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8, width: '100%' }}>
+              <Pressable
+                onPress={() => router.push('/(tabs)/historique?jeu=jeu-1' as Href)}
+                style={{
+                  paddingVertical: 6,
+                  paddingHorizontal: 8,
+                  borderRadius: 8,
+                  backgroundColor: theme.historiqueBtnBg,
+                  maxWidth: '100%',
+                }}
+              >
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.65}
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: theme.historiqueBtnText,
+                    maxWidth: 118,
+                  }}
+                >
+                  {t('historique')}
+                </Text>
+              </Pressable>
+            </View>
 
-          {resultEmoji && (
+            <View style={{ marginTop: 6, marginBottom: 8 }}>
+              <StatBlock label={t('gameAttempts')} value={`${attemptCount}/${TOTAL_ATTEMPTS}`} theme={theme} />
+              <StatBlock label={t('gameFound')} value={foundCount} theme={theme} valueColor={GAME_FOUND} />
+              <StatBlock label={t('gameMissed')} value={missedCount} theme={theme} valueColor={GAME_MISSED} />
+            </View>
+
             <View
               style={{
                 position: 'absolute',
                 top: '50%',
                 left: 8,
-                right: 0,
-                transform: [{ translateY: indicateString ? 52 : 44 }],
+                right: 8,
+                transform: [{ translateY: indicateString ? -32 : -21 }],
                 alignItems: 'center',
               }}
             >
-              <Text style={{ fontSize: 34 }}>{resultEmoji}</Text>
-            </View>
-          )}
-
-          {isGameFinished && (
-            <View
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 0,
-                alignItems: 'center',
-              }}
-            >
-              <Pressable
-                onPress={resetGame}
+              <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
                 style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 16,
-                  borderRadius: 8,
-                  backgroundColor: '#1f6feb',
+                  fontSize: indicateString ? 34 : 42,
+                  fontWeight: '800',
+                  textAlign: 'center',
+                  color: theme.statValue,
                 }}
               >
-                <Text style={{ color: 'white', fontWeight: '700' }}>{t('playAgain')}</Text>
-              </Pressable>
+                {targetNote}
+              </Text>
+              {indicateString && targetStringNum !== null ? (
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: '600',
+                    color: theme.stringHint,
+                    marginTop: 6,
+                    textAlign: 'center',
+                  }}
+                >
+                  {fillTemplate(t('jeu1StringLine'), { note: getOpenStringLabel(targetStringNum, notation) })}
+                </Text>
+              ) : null}
             </View>
-          )}
+
+            {resultEmoji && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: 4,
+                  right: 4,
+                  transform: [{ translateY: indicateString ? 52 : 44 }],
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontSize: 34 }}>{resultEmoji}</Text>
+              </View>
+            )}
+
+            {isGameFinished && (
+              <View
+                style={{
+                  position: 'absolute',
+                  left: 6,
+                  right: 6,
+                  bottom: 10,
+                  alignItems: 'center',
+                }}
+              >
+                <Pressable
+                  onPress={resetGame}
+                  style={{
+                    paddingVertical: 11,
+                    paddingHorizontal: 18,
+                    borderRadius: 10,
+                    backgroundColor: GAME_ACCENT,
+                  }}
+                >
+                  <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>{t('playAgain')}</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
@@ -334,13 +368,23 @@ export default function Jeu1Screen() {
         >
           <View
             style={{
-              backgroundColor: 'white',
+              backgroundColor: theme.modalCardBg,
               borderRadius: 14,
               paddingVertical: 22,
               paddingHorizontal: 20,
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.panelBorder,
             }}
           >
-            <Text style={{ fontSize: 18, lineHeight: 26, marginBottom: 22, textAlign: 'center' }}>
+            <Text
+              style={{
+                fontSize: 17,
+                lineHeight: 25,
+                marginBottom: 22,
+                textAlign: 'center',
+                color: theme.modalText,
+              }}
+            >
               {encouragementForFound(uiLanguage, foundCount)}
             </Text>
             <Pressable
@@ -350,7 +394,7 @@ export default function Jeu1Screen() {
                 paddingVertical: 12,
                 paddingHorizontal: 32,
                 borderRadius: 10,
-                backgroundColor: '#1f6feb',
+                backgroundColor: GAME_ACCENT,
               }}
             >
               <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{t('ok')}</Text>

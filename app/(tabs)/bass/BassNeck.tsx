@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { LayoutChangeEvent, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { LayoutChangeEvent, Pressable, ScrollView, Text, useColorScheme, View } from 'react-native';
 
 import { useNotation } from '@/contexts/notation-context';
 
@@ -51,6 +51,11 @@ export function BassNeck({
   answerMarker = null,
 }: BassNeckProps) {
   const { notation } = useNotation();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  /** Bandeau clair pour les numéros de frettes : contraste stable sur fond de page clair ou gris. */
+  const fretNumberColumnBg = isDark ? '#e8e3dd' : '#f3ece3';
+  const fretNumberColor = '#1c1917';
   const [availableHeight, setAvailableHeight] = useState(0);
   const [neckWidth, setNeckWidth] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
@@ -100,19 +105,27 @@ export function BassNeck({
   const answerMarkerKey =
     answerMarker !== null ? `${answerMarker.stringNum}-${answerMarker.fret}` : null;
 
-  useEffect(() => {
-    if (answerMarkerKey === null || viewportHeight <= 0 || fretHeight <= 0) return;
+  const scrollToAnswerMarker = useCallback(() => {
+    if (answerMarkerKey === null || answerMarker === null) return;
+    if (viewportHeight <= 0 || fretHeight <= 0) return;
 
-    const fret = answerMarker!.fret;
+    const fret = answerMarker.fret;
     const dotCenterY = fret * fretHeight + fretHeight / 2;
     const maxScroll = Math.max(0, neckContentHeight - viewportHeight);
     const targetY = Math.min(maxScroll, Math.max(0, dotCenterY - viewportHeight / 2));
 
-    const id = requestAnimationFrame(() => {
-      scrollRef.current?.scrollTo({ y: targetY, animated: true });
+    scrollRef.current?.scrollTo({ y: targetY, animated: true });
+  }, [answerMarkerKey, answerMarker, viewportHeight, neckContentHeight, fretHeight]);
+
+  useLayoutEffect(() => {
+    scrollToAnswerMarker();
+  }, [scrollToAnswerMarker]);
+
+  const onNeckContentSizeChange = useCallback(() => {
+    requestAnimationFrame(() => {
+      scrollToAnswerMarker();
     });
-    return () => cancelAnimationFrame(id);
-  }, [answerMarkerKey, viewportHeight, neckContentHeight, fretHeight, answerMarker]);
+  }, [scrollToAnswerMarker]);
 
   const neckInner = (
     <>
@@ -327,13 +340,17 @@ export function BassNeck({
     <View
       onLayout={handleMainLayout}
       style={{
+        minWidth: 0,
         width: '65%',
         marginRight: 16,
+        alignSelf: 'stretch',
       }}
     >
       <ScrollView
         ref={scrollRef}
+        style={{ flex: 1 }}
         onLayout={onScrollViewLayout}
+        onContentSizeChange={onNeckContentSizeChange}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           minHeight: neckContentHeight,
@@ -351,6 +368,8 @@ export function BassNeck({
               height: neckContentHeight,
               marginRight: 8,
               position: 'relative',
+              backgroundColor: fretNumberColumnBg,
+              borderRadius: 8,
             }}
           >
             {Array.from({ length: NUMBER_OF_FRETS }).map((_, fretIndex) => {
@@ -364,7 +383,7 @@ export function BassNeck({
                     alignItems: 'center',
                   }}
                 >
-                  <Text style={{ fontSize: 16, fontWeight: '600' }}>{fretIndex}</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: fretNumberColor }}>{fretIndex}</Text>
                 </View>
               );
             })}
