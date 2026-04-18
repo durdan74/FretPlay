@@ -39,6 +39,13 @@ function TabsNavigator() {
         }}
       />
       <Tabs.Screen
+        name="historique"
+        options={{
+          title: 'Historique',
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="parametres"
         options={{
           title: 'Paramètres',

@@ -1,9 +1,11 @@
 import * as Haptics from 'expo-haptics';
+import { router, type Href } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
 
 import { getNotesPoolForNotation } from '@/app/(tabs)/bass/constants';
 import { getDefaultNotationFromLocale, useNotation } from '@/contexts/notation-context';
+import { appendGameSession } from '@/storage/gameHistory';
 
 import { BassNeck } from './bass/BassNeck';
 import { getNoteForPosition, samePitch } from './bass/noteUtils';
@@ -52,6 +54,8 @@ export default function Jeu1Screen() {
   const emojiTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wasHydratedRef = useRef(false);
   const lastNotationRef = useRef(notation);
+  /** Horodatage du 1er essai de la partie en cours (pour `durationMs`). */
+  const gameStartedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
@@ -72,6 +76,7 @@ export default function Jeu1Screen() {
     setTargetNote(getRandomNote(notesPool));
     setResultEmoji(null);
     setEndDialogDismissed(false);
+    gameStartedAtRef.current = null;
     if (emojiTimeoutRef.current) {
       clearTimeout(emojiTimeoutRef.current);
       emojiTimeoutRef.current = null;
@@ -110,11 +115,18 @@ export default function Jeu1Screen() {
   const handleSelect = (stringNumber: number, fret: number) => {
     if (attemptCount >= TOTAL_ATTEMPTS) return;
 
-    setSelectedString(stringNumber);
-    setSelectedFret(fret);
+    if (attemptCount === 0) {
+      gameStartedAtRef.current = Date.now();
+    }
 
+    const nextAttempt = attemptCount + 1;
     const playedNote = getNoteForPosition(stringNumber, fret, notation);
     const isCorrect = samePitch(playedNote, targetNote);
+    const nextFound = isCorrect ? foundCount + 1 : foundCount;
+    const nextMissed = isCorrect ? missedCount : missedCount + 1;
+
+    setSelectedString(stringNumber);
+    setSelectedFret(fret);
     setSelectedResult(isCorrect ? 'correct' : 'wrong');
     showResultEmoji(isCorrect ? '👍' : '😬');
 
@@ -129,11 +141,24 @@ export default function Jeu1Screen() {
     if (isCorrect) {
       setFoundCount((prev) => prev + 1);
       setTargetNote((prev) => getRandomNote(notesPool, prev));
-      return;
+    } else {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setMissedCount((prev) => prev + 1);
     }
 
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    setMissedCount((prev) => prev + 1);
+    if (nextAttempt === TOTAL_ATTEMPTS) {
+      const endedAt = Date.now();
+      const startedAt = gameStartedAtRef.current ?? endedAt;
+      gameStartedAtRef.current = null;
+      void appendGameSession({
+        playedAt: new Date(endedAt).toISOString(),
+        notation,
+        attempts: TOTAL_ATTEMPTS,
+        found: nextFound,
+        missed: nextMissed,
+        durationMs: Math.max(0, endedAt - startedAt),
+      });
+    }
   };
 
   const isGameFinished = attemptCount >= TOTAL_ATTEMPTS;
@@ -170,16 +195,31 @@ export default function Jeu1Screen() {
             alignSelf: 'stretch',
             justifyContent: 'flex-start',
             paddingLeft: 8,
-            paddingTop: 24,
+            paddingTop: 12,
             position: 'relative',
           }}
         >
-          <Text style={{ fontSize: 18 }}>Essais :</Text>
-          <Text style={{ fontSize: 18, marginBottom: 12 }}>
-            {attemptCount}/{TOTAL_ATTEMPTS}
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 10 }}>
+            <Pressable
+              onPress={() => router.push('/(tabs)/historique' as Href)}
+              style={{
+                paddingVertical: 6,
+                paddingHorizontal: 10,
+                borderRadius: 8,
+                backgroundColor: '#e8e8ea',
+              }}
+            >
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1a1a1a' }}>Historique</Text>
+            </Pressable>
+          </View>
 
-          <Text style={{ fontSize: 18 }}>Trouvées :</Text>
+          <View style={{ marginTop: 14 }}>
+            <Text style={{ fontSize: 18 }}>Essais :</Text>
+            <Text style={{ fontSize: 18, marginBottom: 12 }}>
+              {attemptCount}/{TOTAL_ATTEMPTS}
+            </Text>
+
+            <Text style={{ fontSize: 18 }}>Trouvées :</Text>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#16a34a', marginBottom: 12 }}>
             {foundCount}
           </Text>
@@ -188,6 +228,7 @@ export default function Jeu1Screen() {
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#dc2626', marginBottom: 20 }}>
             {missedCount}
           </Text>
+          </View>
 
           <View
             style={{
