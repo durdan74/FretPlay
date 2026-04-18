@@ -33,7 +33,7 @@ export default function Index() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Jeu 1</Text>
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Note sur le manche</Text>
         </Pressable>
 
         <Pressable
@@ -47,7 +47,7 @@ export default function Index() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Jeu 2</Text>
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Trouve la case</Text>
         </Pressable>
       </View>
     </View>

@@ -24,7 +24,7 @@ export type GameSessionRecord = {
   missed: number;
   /** Durée entre le 1er et le 10e essai, en millisecondes. */
   durationMs: number;
-  /** Absent dans les anciennes données : traité comme Jeu 1. */
+  /** Absent dans les anciennes données : traité comme « Note sur le manche » (jeu-1). */
   gameKind: GameKind;
 };
 

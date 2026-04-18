@@ -50,7 +50,15 @@ export default function HistoriqueScreen() {
   );
 
   const filtered = useMemo(() => filterByKind(sessions, gameKind), [sessions, gameKind]);
-  const gameTitle = gameKind === 'jeu-2' ? 'Jeu 2' : 'Jeu 1';
+  const gameTitle = gameKind === 'jeu-2' ? 'Trouve la case' : 'Note sur le manche';
+  const gameHref = useMemo<Href>(
+    () => (gameKind === 'jeu-2' ? '/(tabs)/jeu-2' : '/(tabs)/jeu-1'),
+    [gameKind],
+  );
+
+  const retourAuJeu = useCallback(() => {
+    router.replace(gameHref);
+  }, [gameHref]);
 
   return (
     <View
@@ -72,7 +80,7 @@ export default function HistoriqueScreen() {
       >
         <Text style={{ fontSize: 26, fontWeight: '700' }}>Historique</Text>
         <Pressable
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)' as Href))}
+          onPress={retourAuJeu}
           style={{
             paddingVertical: 8,
             paddingHorizontal: 14,

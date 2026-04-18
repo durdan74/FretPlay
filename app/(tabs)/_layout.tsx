@@ -34,14 +34,14 @@ function TabsNavigator() {
       <Tabs.Screen
         name="jeu-1"
         options={{
-          title: 'Jeu 1',
+          title: 'Note sur le manche',
           href: null,
         }}
       />
       <Tabs.Screen
         name="jeu-2"
         options={{
-          title: 'Jeu 2',
+          title: 'Trouve la case',
           href: null,
         }}
       />

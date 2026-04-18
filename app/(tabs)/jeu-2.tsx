@@ -261,6 +261,9 @@ export default function Jeu2Screen() {
                 if (isAnswer) {
                   color = '#16a34a';
                   fontWeight = '800';
+                } else if (isPicked && !isAnswer) {
+                  color = '#dc2626';
+                  fontWeight = '800';
                 } else {
                   color = '#111';
                 }
@@ -268,8 +271,12 @@ export default function Jeu2Screen() {
                 color = '#16a34a';
                 fontWeight = '800';
               } else if (pickedNote !== null && isPicked && !isAnswer) {
-                color = '#b91c1c';
+                color = '#dc2626';
+                fontWeight = '800';
               }
+
+              const showThumb = pickedNote !== null && isPicked && isAnswer;
+              const showSad = revealedWrong && isPicked && !isAnswer;
 
               return (
                 <Pressable
@@ -286,7 +293,11 @@ export default function Jeu2Screen() {
                     alignItems: 'center',
                   }}
                 >
-                  <Text style={{ fontSize: 20, fontWeight, color }}>{note}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Text style={{ fontSize: 20, fontWeight, color }}>{note}</Text>
+                    {showThumb ? <Text style={{ fontSize: 22 }}>👍</Text> : null}
+                    {showSad ? <Text style={{ fontSize: 22 }}>😞</Text> : null}
+                  </View>
                 </Pressable>
               );
             })}

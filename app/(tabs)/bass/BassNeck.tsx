@@ -35,9 +35,9 @@ type BassNeckProps = {
   /** Note réellement jouée (même graphie que la notation), affichée dans le rond si faux. */
   wrongPlayedNote: string | null;
   onSelect: (stringNumber: number, fret: number) => void;
-  /** Si false, le manche ne réagit pas au tap (Jeu 2). Défaut : true. */
+  /** Si false, le manche ne réagit pas au tap (« Trouve la case »). Défaut : true. */
   neckInteractive?: boolean;
-  /** Point vert : position de la note à identifier (Jeu 2). */
+  /** Point vert : position de la note à identifier (« Trouve la case »). */
   answerMarker?: AnswerMarkerPosition | null;
 };
 
