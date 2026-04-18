@@ -13,6 +13,7 @@ import {
   STRING_WIDTHS,
 } from './constants';
 import { getClosestStringFromX } from './noteUtils';
+import { playFretSound } from './playFretSound';
 
 /** Ordre d’affichage gauche → droite : corde 4 (grave) … corde 1 (aiguë), comme `stringXs`. */
 const OPEN_STRING_DISPLAY_ORDER = [4, 3, 2, 1] as const;
@@ -99,6 +100,7 @@ export function BassNeck({
     if (fretIndex < 0 || fretIndex >= NUMBER_OF_FRETS) return;
 
     const stringNumber = getClosestStringFromX(x, stringXs);
+    void playFretSound(stringNumber, fretIndex);
     onSelect(stringNumber, fretIndex);
   };
 
