@@ -3,12 +3,16 @@ import { router, type Href } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
 
-import { getNotesPoolForNotation } from '@/app/(tabs)/bass/constants';
-import { getDefaultNotationFromLocale, useNotation } from '@/contexts/notation-context';
+import {
+  getNotesPoolForNotation,
+  NUMBER_OF_FRETS,
+  type NotationSystem,
+} from '@/app/(tabs)/bass/constants';
+import { useNotation } from '@/contexts/notation-context';
 import { appendGameSession } from '@/storage/gameHistory';
 
 import { BassNeck } from './bass/BassNeck';
-import { getNoteForPosition, samePitch } from './bass/noteUtils';
+import { getNoteForPosition, getOpenStringLabel, samePitch } from './bass/noteUtils';
 
 const TOTAL_ATTEMPTS = 10;
 
@@ -17,6 +21,23 @@ function getRandomNote(pool: string[], excluding?: string): string {
     excluding !== undefined ? pool.filter((note) => !samePitch(note, excluding)) : pool;
   const randomIndex = Math.floor(Math.random() * filtered.length);
   return filtered[randomIndex];
+}
+
+function pickRandomStringTarget(
+  notation: NotationSystem,
+  exclude?: { note: string; stringNum: number },
+): { note: string; stringNum: number } {
+  const strings = [1, 2, 3, 4] as const;
+  for (let attempt = 0; attempt < 120; attempt++) {
+    const stringNum = strings[Math.floor(Math.random() * 4)]!;
+    const fret = Math.floor(Math.random() * NUMBER_OF_FRETS);
+    const note = getNoteForPosition(stringNum, fret, notation);
+    if (exclude && samePitch(note, exclude.note) && stringNum === exclude.stringNum) {
+      continue;
+    }
+    return { note, stringNum };
+  }
+  return { note: getNoteForPosition(4, 0, notation), stringNum: 4 };
 }
 
 function getScoreEncouragementMessage(found: number): string {
@@ -36,16 +57,15 @@ function getScoreEncouragementMessage(found: number): string {
 }
 
 export default function Jeu1Screen() {
-  const { notation, isHydrated } = useNotation();
+  const { notation, isHydrated, indicateString } = useNotation();
   const notesPool = useMemo(() => getNotesPoolForNotation(notation), [notation]);
 
   const [selectedString, setSelectedString] = useState<number | null>(null);
   const [selectedFret, setSelectedFret] = useState<number | null>(null);
   const [selectedResult, setSelectedResult] = useState<'correct' | 'wrong' | null>(null);
   const [wrongPlayedNote, setWrongPlayedNote] = useState<string | null>(null);
-  const [targetNote, setTargetNote] = useState<string>(() =>
-    getRandomNote(getNotesPoolForNotation(getDefaultNotationFromLocale())),
-  );
+  const [targetNote, setTargetNote] = useState<string>('Do');
+  const [targetStringNum, setTargetStringNum] = useState<number | null>(null);
   const [foundCount, setFoundCount] = useState(0);
   const [missedCount, setMissedCount] = useState(0);
   const [attemptCount, setAttemptCount] = useState(0);
@@ -54,6 +74,7 @@ export default function Jeu1Screen() {
   const emojiTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wasHydratedRef = useRef(false);
   const lastNotationRef = useRef(notation);
+  const lastIndicateStringRef = useRef(indicateString);
   /** Horodatage du 1er essai de la partie en cours (pour `durationMs`). */
   const gameStartedAtRef = useRef<number | null>(null);
 
@@ -73,7 +94,14 @@ export default function Jeu1Screen() {
     setFoundCount(0);
     setMissedCount(0);
     setAttemptCount(0);
-    setTargetNote(getRandomNote(notesPool));
+    if (indicateString) {
+      const t = pickRandomStringTarget(notation);
+      setTargetNote(t.note);
+      setTargetStringNum(t.stringNum);
+    } else {
+      setTargetStringNum(null);
+      setTargetNote(getRandomNote(notesPool));
+    }
     setResultEmoji(null);
     setEndDialogDismissed(false);
     gameStartedAtRef.current = null;
@@ -81,17 +109,16 @@ export default function Jeu1Screen() {
       clearTimeout(emojiTimeoutRef.current);
       emojiTimeoutRef.current = null;
     }
-  }, [notesPool]);
+  }, [notesPool, indicateString, notation]);
 
   useEffect(() => {
     if (!isHydrated) return;
 
     if (!wasHydratedRef.current) {
       wasHydratedRef.current = true;
-      if (getDefaultNotationFromLocale() !== notation) {
-        resetGame();
-      }
+      resetGame();
       lastNotationRef.current = notation;
+      lastIndicateStringRef.current = indicateString;
       return;
     }
 
@@ -99,7 +126,11 @@ export default function Jeu1Screen() {
       resetGame();
       lastNotationRef.current = notation;
     }
-  }, [isHydrated, notation, resetGame]);
+    if (lastIndicateStringRef.current !== indicateString) {
+      resetGame();
+      lastIndicateStringRef.current = indicateString;
+    }
+  }, [isHydrated, notation, indicateString, resetGame]);
 
   const showResultEmoji = (emoji: string) => {
     if (emojiTimeoutRef.current) {
@@ -121,7 +152,10 @@ export default function Jeu1Screen() {
 
     const nextAttempt = attemptCount + 1;
     const playedNote = getNoteForPosition(stringNumber, fret, notation);
-    const isCorrect = samePitch(playedNote, targetNote);
+    const noteOk = samePitch(playedNote, targetNote);
+    const stringOk =
+      !indicateString || targetStringNum === null ? true : stringNumber === targetStringNum;
+    const isCorrect = noteOk && stringOk;
     const nextFound = isCorrect ? foundCount + 1 : foundCount;
     const nextMissed = isCorrect ? missedCount : missedCount + 1;
 
@@ -140,7 +174,13 @@ export default function Jeu1Screen() {
 
     if (isCorrect) {
       setFoundCount((prev) => prev + 1);
-      setTargetNote((prev) => getRandomNote(notesPool, prev));
+      if (indicateString && targetStringNum !== null) {
+        const t = pickRandomStringTarget(notation, { note: targetNote, stringNum: targetStringNum });
+        setTargetNote(t.note);
+        setTargetStringNum(t.stringNum);
+      } else {
+        setTargetNote((prev) => getRandomNote(notesPool, prev));
+      }
     } else {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setMissedCount((prev) => prev + 1);
@@ -236,13 +276,23 @@ export default function Jeu1Screen() {
               top: '50%',
               left: 0,
               right: 0,
-              transform: [{ translateY: -21 }],
+              transform: [{ translateY: indicateString ? -32 : -21 }],
               alignItems: 'center',
+              paddingHorizontal: 4,
             }}
           >
-            <Text numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 42, fontWeight: '800' }}>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{ fontSize: indicateString ? 34 : 42, fontWeight: '800', textAlign: 'center' }}
+            >
               {targetNote}
             </Text>
+            {indicateString && targetStringNum !== null ? (
+              <Text style={{ fontSize: 16, fontWeight: '600', color: '#333', marginTop: 6, textAlign: 'center' }}>
+                corde de {getOpenStringLabel(targetStringNum, notation)}
+              </Text>
+            ) : null}
           </View>
 
           {resultEmoji && (
@@ -252,7 +302,7 @@ export default function Jeu1Screen() {
                 top: '50%',
                 left: 8,
                 right: 0,
-                transform: [{ translateY: 44 }],
+                transform: [{ translateY: indicateString ? 52 : 44 }],
                 alignItems: 'center',
               }}
             >

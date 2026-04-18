@@ -19,12 +19,15 @@ const ASYNC_FALLBACK_KEY = '@notesbasse/app_settings.json';
 export type AppSettings = {
   settingsVersion: number;
   notation: NotationSystem;
+  /** Si true, la note à trouver est sur une corde imposée (difficulté). */
+  indicateString: boolean;
 };
 
 export function getDefaultAppSettings(): AppSettings {
   return {
     settingsVersion: APP_SETTINGS_VERSION,
     notation: getDefaultNotationFromLocale(),
+    indicateString: false,
   };
 }
 
@@ -37,7 +40,9 @@ function parseSettingsJson(raw: string | null): AppSettings | null {
     if (notation !== 'european' && notation !== 'anglo-saxon') return null;
     const v = (o as { settingsVersion?: unknown }).settingsVersion;
     const settingsVersion = typeof v === 'number' ? v : APP_SETTINGS_VERSION;
-    return { settingsVersion, notation };
+    const rawIndicate = (o as { indicateString?: unknown }).indicateString;
+    const indicateString = typeof rawIndicate === 'boolean' ? rawIndicate : false;
+    return { settingsVersion, notation, indicateString };
   } catch {
     return null;
   }
@@ -91,6 +96,7 @@ export async function loadAppSettings(): Promise<AppSettings> {
     const migrated: AppSettings = {
       settingsVersion: APP_SETTINGS_VERSION,
       notation: legacy,
+      indicateString: false,
     };
     await saveAppSettings(migrated);
     await AsyncStorage.removeItem(LEGACY_NOTATION_KEY);
@@ -106,7 +112,8 @@ export async function loadAppSettings(): Promise<AppSettings> {
 export async function saveAppSettings(settings: AppSettings): Promise<void> {
   const body = JSON.stringify(settings, null, 2);
   const written = await writeSettingsToFile(body);
+  await AsyncStorage.setItem(ASYNC_FALLBACK_KEY, body);
   if (!written) {
-    await AsyncStorage.setItem(ASYNC_FALLBACK_KEY, body);
+    /* fichier indisponible : JSON déjà en AsyncStorage */
   }
 }

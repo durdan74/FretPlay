@@ -7,6 +7,11 @@ import {
   type NotationSystem,
 } from './constants';
 
+export function getOpenStringLabel(stringNumber: number, notation: NotationSystem): string {
+  const n = stringNumber as 1 | 2 | 3 | 4;
+  return notation === 'european' ? OPEN_STRING_NOTES[n] : OPEN_STRING_NOTES_EN[n];
+}
+
 export function getPitchClass(noteName: string): number {
   const pc = NOTE_TO_PITCH_CLASS[noteName];
   if (pc === undefined) {

@@ -1,21 +1,28 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
-import { APP_SETTINGS_VERSION, loadAppSettings, saveAppSettings, type AppSettings } from '@/storage/appSettings';
-import { getDefaultNotationFromLocale } from '@/lib/defaultNotation';
+import {
+  APP_SETTINGS_VERSION,
+  getDefaultAppSettings,
+  loadAppSettings,
+  saveAppSettings,
+  type AppSettings,
+} from '@/storage/appSettings';
 
 export { getDefaultNotationFromLocale } from '@/lib/defaultNotation';
 
-type NotationContextValue = {
+type AppSettingsContextValue = {
   notation: NotationSystem;
+  indicateString: boolean;
   setNotation: (value: NotationSystem) => void;
+  setIndicateString: (value: boolean) => void;
   isHydrated: boolean;
 };
 
-const NotationContext = createContext<NotationContextValue | null>(null);
+const AppSettingsContext = createContext<AppSettingsContextValue | null>(null);
 
 export function NotationProvider({ children }: { children: ReactNode }) {
-  const [notation, setNotationState] = useState<NotationSystem>(() => getDefaultNotationFromLocale());
+  const [settings, setSettings] = useState<AppSettings>(getDefaultAppSettings);
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -24,7 +31,7 @@ export function NotationProvider({ children }: { children: ReactNode }) {
       try {
         const loaded = await loadAppSettings();
         if (cancelled) return;
-        setNotationState(loaded.notation);
+        setSettings(loaded);
       } finally {
         if (!cancelled) {
           setIsHydrated(true);
@@ -37,24 +44,45 @@ export function NotationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setNotation = useCallback((value: NotationSystem) => {
-    setNotationState(value);
-    const payload: AppSettings = {
-      settingsVersion: APP_SETTINGS_VERSION,
-      notation: value,
-    };
-    void saveAppSettings(payload);
+    setSettings((prev) => {
+      const next: AppSettings = {
+        ...prev,
+        settingsVersion: APP_SETTINGS_VERSION,
+        notation: value,
+      };
+      void saveAppSettings(next);
+      return next;
+    });
+  }, []);
+
+  const setIndicateString = useCallback((value: boolean) => {
+    setSettings((prev) => {
+      const next: AppSettings = {
+        ...prev,
+        settingsVersion: APP_SETTINGS_VERSION,
+        indicateString: value,
+      };
+      void saveAppSettings(next);
+      return next;
+    });
   }, []);
 
   const value = useMemo(
-    () => ({ notation, setNotation, isHydrated }),
-    [notation, setNotation, isHydrated],
+    () => ({
+      notation: settings.notation,
+      indicateString: settings.indicateString,
+      setNotation,
+      setIndicateString,
+      isHydrated,
+    }),
+    [settings.notation, settings.indicateString, setNotation, setIndicateString, isHydrated],
   );
 
-  return <NotationContext.Provider value={value}>{children}</NotationContext.Provider>;
+  return <AppSettingsContext.Provider value={value}>{children}</AppSettingsContext.Provider>;
 }
 
 export function useNotation() {
-  const ctx = useContext(NotationContext);
+  const ctx = useContext(AppSettingsContext);
   if (!ctx) {
     throw new Error('useNotation must be used within NotationProvider');
   }
