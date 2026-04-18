@@ -1,7 +1,11 @@
 import type { UiLanguage } from '@/lib/i18n/types';
 
 const en = {
-  menuTitle: 'Main menu',
+  homeAppName: 'NotesBasse',
+  homeTagline: 'Train on the bass fretboard',
+  homeSectionModes: 'Modes',
+  homeCardNeckHint: 'See the target note — tap the right spot on the neck.',
+  homeCardFindHint: 'A green dot marks a fret — pick the correct note name.',
   gameNameNeck: 'Note on the neck',
   gameNameFindCase: 'Find the fret',
   tabMenu: 'Menu',
@@ -51,7 +55,11 @@ const en = {
 export type TranslationKey = keyof typeof en;
 
 const fr: Record<TranslationKey, string> = {
-  menuTitle: 'Menu principal',
+  homeAppName: 'NotesBasse',
+  homeTagline: 'Entraîne-toi sur le manche de la basse',
+  homeSectionModes: 'Modes',
+  homeCardNeckHint: 'La note à jouer s’affiche — indique-la sur le manche.',
+  homeCardFindHint: 'Un point vert sur le manche — choisis le bon nom de note.',
   gameNameNeck: 'Note sur le manche',
   gameNameFindCase: 'Trouve la case',
   tabMenu: 'Menu',
@@ -99,7 +107,11 @@ const fr: Record<TranslationKey, string> = {
 };
 
 const es: Record<TranslationKey, string> = {
-  menuTitle: 'Menú principal',
+  homeAppName: 'NotesBasse',
+  homeTagline: 'Practica en el diapasón del bajo',
+  homeSectionModes: 'Modos',
+  homeCardNeckHint: 'Aparece la nota — señálala en el mástil.',
+  homeCardFindHint: 'Un punto verde en el mástil — elige el nombre correcto.',
   gameNameNeck: 'Nota en el mástil',
   gameNameFindCase: 'Encuentra el traste',
   tabMenu: 'Menú',
@@ -147,7 +159,11 @@ const es: Record<TranslationKey, string> = {
 };
 
 const de: Record<TranslationKey, string> = {
-  menuTitle: 'Hauptmenü',
+  homeAppName: 'NotesBasse',
+  homeTagline: 'Übe am Bass-Griffbrett',
+  homeSectionModes: 'Modi',
+  homeCardNeckHint: 'Die gesuchte Note erscheint — tippe die richtige Stelle am Griffbrett.',
+  homeCardFindHint: 'Ein grüner Punkt am Griffbrett — wähle den richtigen Notennamen.',
   gameNameNeck: 'Note am Griffbrett',
   gameNameFindCase: 'Bund finden',
   tabMenu: 'Menü',
@@ -195,7 +211,11 @@ const de: Record<TranslationKey, string> = {
 };
 
 const it: Record<TranslationKey, string> = {
-  menuTitle: 'Menu principale',
+  homeAppName: 'NotesBasse',
+  homeTagline: 'Allenati sul manico del basso',
+  homeSectionModes: 'Modalità',
+  homeCardNeckHint: 'Compare la nota da suonare — indicala sul manico.',
+  homeCardFindHint: 'Un punto verde sul manico — scegli il nome giusto della nota.',
   gameNameNeck: 'Nota sul manico',
   gameNameFindCase: 'Trova il tasto',
   tabMenu: 'Menu',
