@@ -1,9 +1,11 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Animated,
+  BackHandler,
   Dimensions,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
@@ -14,6 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { OnboardingLanguageCombo } from '@/components/OnboardingLanguageCombo';
 import { GAME_ACCENT, GAME_FOUND, GAME_MISSED } from '@/constants/gameScreen';
 import { Colors } from '@/constants/theme';
 import { useNotation } from '@/contexts/notation-context';
@@ -24,29 +27,8 @@ import type { TranslationKey } from '@/lib/i18n/strings';
 const TOTAL_SLIDES = 13;
 const TRIAL_INDEX = 12;
 
-const PART1_END = 2;
-const PART2_START = 3;
-const PART2_END = 8;
-const PART3_START = 9;
-const PART3_END = 11;
-
 const Q1_OPTION_KEYS: TranslationKey[] = ['onboardingQ1o0', 'onboardingQ1o1', 'onboardingQ1o2', 'onboardingQ1o3'];
 const Q2_OPTION_KEYS: TranslationKey[] = ['onboardingQ2o0', 'onboardingQ2o1', 'onboardingQ2o2', 'onboardingQ2o3'];
-
-function partIndexForSlide(slide: number): 0 | 1 | 2 | 3 {
-  if (slide <= PART1_END) return 0;
-  if (slide <= PART2_END) return 1;
-  if (slide <= PART3_END) return 2;
-  return 3;
-}
-
-function firstSlideOfNextPart(slide: number): number {
-  const p = partIndexForSlide(slide);
-  if (p === 0) return PART2_START;
-  if (p === 1) return PART3_START;
-  if (p === 2) return TRIAL_INDEX;
-  return TRIAL_INDEX;
-}
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
@@ -100,7 +82,6 @@ export default function OnboardingScreen() {
   const pageBg = colorScheme === 'dark' ? '#1a1816' : '#fff7f0';
   const titleColor = palette.text;
   const bodyColor = colorScheme === 'dark' ? '#a8a29e' : '#57534e';
-  const mutedTrack = colorScheme === 'dark' ? '#3f3f46' : '#e7e5e4';
   const accent = GAME_ACCENT;
   const illuBorder = colorScheme === 'dark' ? '#52525b' : '#d6d3d1';
   const illuBg = colorScheme === 'dark' ? '#27272a' : '#fafaf9';
@@ -113,6 +94,24 @@ export default function OnboardingScreen() {
     scrollRef.current?.scrollTo({ x: windowWidth * clamped, animated: true });
   }, []);
 
+  const slideIndexRef = useRef(slideIndex);
+  slideIndexRef.current = slideIndex;
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        const idx = slideIndexRef.current;
+        if (idx > 0) {
+          goToSlide(idx - 1);
+          return true;
+        }
+        return true;
+      };
+      const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => sub.remove();
+    }, [goToSlide]),
+  );
+
   const onMomentumScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
     setSlideIndex(Math.round(x / Math.max(1, windowWidth)));
@@ -121,7 +120,9 @@ export default function OnboardingScreen() {
   const onContinuePress = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (slideIndex >= TRIAL_INDEX) return;
-    goToSlide(firstSlideOfNextPart(slideIndex));
+    if (slideIndex < TOTAL_SLIDES - 1) {
+      goToSlide(slideIndex + 1);
+    }
   }, [goToSlide, slideIndex]);
 
   const onTrialOk = useCallback(async () => {
@@ -138,8 +139,6 @@ export default function OnboardingScreen() {
       return next;
     });
   }, []);
-
-  const partHighlight = partIndexForSlide(slideIndex);
 
   const summaryLines = useMemo(() => {
     const levelPart =
@@ -437,26 +436,8 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: pageBg }} edges={['top', 'bottom']}>
-      <View style={{ paddingHorizontal: 18, paddingTop: 8, paddingBottom: 6 }}>
-        <View style={{ flexDirection: 'row', gap: 6 }}>
-          {[0, 1, 2, 3].map((seg) => (
-            <View
-              key={seg}
-              style={{
-                flex: 1,
-                height: 4,
-                borderRadius: 2,
-                backgroundColor: seg <= partHighlight ? accent : mutedTrack,
-              }}
-            />
-          ))}
-        </View>
-        <Text style={{ fontSize: 12, color: bodyColor, textAlign: 'center', marginTop: 8 }}>
-          {slideIndex + 1} / {TOTAL_SLIDES}
-        </Text>
-      </View>
-
-      <View style={{ flex: 1 }}>
+      <OnboardingLanguageCombo />
+      <View style={{ flex: 1, paddingTop: 96 }}>
         <Animated.ScrollView
           ref={scrollRef}
           horizontal
