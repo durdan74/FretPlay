@@ -12,6 +12,8 @@ export const MAX_GAME_HISTORY_SESSIONS = 100;
 
 export const GAME_HISTORY_FILE_VERSION = 1;
 
+export type GameKind = 'jeu-1' | 'jeu-2';
+
 export type GameSessionRecord = {
   id: string;
   /** Fin de partie (ISO 8601). */
@@ -22,6 +24,8 @@ export type GameSessionRecord = {
   missed: number;
   /** Durée entre le 1er et le 10e essai, en millisecondes. */
   durationMs: number;
+  /** Absent dans les anciennes données : traité comme Jeu 1. */
+  gameKind: GameKind;
 };
 
 type GameHistoryFile = {
@@ -33,10 +37,17 @@ function newSessionId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
-function isValidSession(o: unknown): o is GameSessionRecord {
+type RawGameSession = Omit<GameSessionRecord, 'gameKind'> & { gameKind?: unknown };
+
+function isRawGameSession(o: unknown): o is RawGameSession {
   if (!o || typeof o !== 'object') return false;
   const r = o as Record<string, unknown>;
+  const kindOk =
+    r.gameKind === undefined ||
+    r.gameKind === 'jeu-1' ||
+    r.gameKind === 'jeu-2';
   return (
+    kindOk &&
     typeof r.id === 'string' &&
     typeof r.playedAt === 'string' &&
     (r.notation === 'european' || r.notation === 'anglo-saxon') &&
@@ -47,15 +58,29 @@ function isValidSession(o: unknown): o is GameSessionRecord {
   );
 }
 
+function normalizeGameKind(raw: RawGameSession): GameSessionRecord {
+  const gameKind: GameKind = raw.gameKind === 'jeu-2' ? 'jeu-2' : 'jeu-1';
+  return {
+    id: raw.id,
+    playedAt: raw.playedAt,
+    notation: raw.notation,
+    attempts: raw.attempts,
+    found: raw.found,
+    missed: raw.missed,
+    durationMs: raw.durationMs,
+    gameKind,
+  };
+}
+
 function parseHistoryFile(raw: string | null): GameSessionRecord[] {
   if (!raw) return [];
   try {
     const data = JSON.parse(raw) as unknown;
     if (Array.isArray(data)) {
-      return data.filter(isValidSession);
+      return data.filter(isRawGameSession).map(normalizeGameKind);
     }
     if (data && typeof data === 'object' && Array.isArray((data as GameHistoryFile).sessions)) {
-      return (data as GameHistoryFile).sessions.filter(isValidSession);
+      return (data as GameHistoryFile).sessions.filter(isRawGameSession).map(normalizeGameKind);
     }
   } catch {
     /* ignore */

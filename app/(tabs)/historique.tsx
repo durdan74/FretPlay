@@ -1,9 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { router, type Href } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import { router, useLocalSearchParams, type Href } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { loadGameHistory, type GameSessionRecord } from '@/storage/gameHistory';
+import { loadGameHistory, type GameKind, type GameSessionRecord } from '@/storage/gameHistory';
 
 function formatDate(iso: string): string {
   try {
@@ -24,7 +24,19 @@ function notationLabel(n: GameSessionRecord['notation']): string {
   return n === 'european' ? 'Européen' : 'Anglo-saxon';
 }
 
+function parseGameKind(raw: string | string[] | undefined): GameKind {
+  const v = Array.isArray(raw) ? raw[0] : raw;
+  return v === 'jeu-2' ? 'jeu-2' : 'jeu-1';
+}
+
+function filterByKind(sessions: GameSessionRecord[], kind: GameKind): GameSessionRecord[] {
+  return sessions.filter((s) => s.gameKind === kind);
+}
+
 export default function HistoriqueScreen() {
+  const { jeu } = useLocalSearchParams<{ jeu?: string }>();
+  const gameKind = useMemo(() => parseGameKind(jeu), [jeu]);
+
   const [sessions, setSessions] = useState<GameSessionRecord[]>([]);
 
   const refresh = useCallback(() => {
@@ -36,6 +48,9 @@ export default function HistoriqueScreen() {
       refresh();
     }, [refresh]),
   );
+
+  const filtered = useMemo(() => filterByKind(sessions, gameKind), [sessions, gameKind]);
+  const gameTitle = gameKind === 'jeu-2' ? 'Jeu 2' : 'Jeu 1';
 
   return (
     <View
@@ -52,12 +67,12 @@ export default function HistoriqueScreen() {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: 16,
+          marginBottom: 8,
         }}
       >
         <Text style={{ fontSize: 26, fontWeight: '700' }}>Historique</Text>
         <Pressable
-          onPress={() => router.replace('/(tabs)/jeu-1' as Href)}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)' as Href))}
           style={{
             paddingVertical: 8,
             paddingHorizontal: 14,
@@ -69,11 +84,13 @@ export default function HistoriqueScreen() {
         </Pressable>
       </View>
 
+      <Text style={{ fontSize: 17, fontWeight: '600', color: '#444', marginBottom: 14 }}>{gameTitle}</Text>
+
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {sessions.length === 0 ? (
+        {filtered.length === 0 ? (
           <Text style={{ fontSize: 16, color: '#666' }}>Aucune partie enregistrée pour le moment.</Text>
         ) : (
-          sessions.map((s) => (
+          filtered.map((s) => (
             <View
               key={s.id}
               style={{

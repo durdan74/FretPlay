@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
-export type ReturnableTabName = 'index' | 'jeu-1';
+export type ReturnableTabName = 'index' | 'jeu-1' | 'jeu-2';
 
 type ParametresReturnContextValue = {
   returnTab: ReturnableTabName;

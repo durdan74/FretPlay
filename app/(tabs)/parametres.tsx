@@ -98,7 +98,8 @@ export default function ParametresScreen() {
   const { notation, setNotation, indicateString, setIndicateString } = useNotation();
 
   const handleRetour = () => {
-    const href: Href = returnTab === 'index' ? '/(tabs)' : '/(tabs)/jeu-1';
+    const href: Href =
+      returnTab === 'index' ? '/(tabs)' : returnTab === 'jeu-2' ? '/(tabs)/jeu-2' : '/(tabs)/jeu-1';
     router.navigate(href);
   };
 

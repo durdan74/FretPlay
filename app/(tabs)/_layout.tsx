@@ -9,7 +9,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { ParametresReturnProvider, useParametresReturn, type ReturnableTabName } from './parametres-return-context';
 
 function isReturnableTabName(name: string | undefined): name is ReturnableTabName {
-  return name === 'index' || name === 'jeu-1';
+  return name === 'index' || name === 'jeu-1' || name === 'jeu-2';
 }
 
 function TabsNavigator() {
@@ -35,6 +35,13 @@ function TabsNavigator() {
         name="jeu-1"
         options={{
           title: 'Jeu 1',
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="jeu-2"
+        options={{
+          title: 'Jeu 2',
           href: null,
         }}
       />

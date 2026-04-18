@@ -35,6 +35,20 @@ export default function Index() {
         >
           <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Jeu 1</Text>
         </Pressable>
+
+        <Pressable
+          onPress={() => router.push('/(tabs)/jeu-2')}
+          style={{
+            minWidth: 180,
+            paddingVertical: 14,
+            paddingHorizontal: 18,
+            borderRadius: 12,
+            backgroundColor: '#1f6feb',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>Jeu 2</Text>
+        </Pressable>
       </View>
     </View>
   );

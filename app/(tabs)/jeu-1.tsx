@@ -197,6 +197,7 @@ export default function Jeu1Screen() {
         found: nextFound,
         missed: nextMissed,
         durationMs: Math.max(0, endedAt - startedAt),
+        gameKind: 'jeu-1',
       });
     }
   };
@@ -241,7 +242,7 @@ export default function Jeu1Screen() {
         >
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 10 }}>
             <Pressable
-              onPress={() => router.push('/(tabs)/historique' as Href)}
+              onPress={() => router.push('/(tabs)/historique?jeu=jeu-1' as Href)}
               style={{
                 paddingVertical: 6,
                 paddingHorizontal: 10,
