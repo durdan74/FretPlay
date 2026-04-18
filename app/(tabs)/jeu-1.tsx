@@ -343,13 +343,28 @@ export default function Jeu1Screen() {
                 <Pressable
                   onPress={resetGame}
                   style={{
+                    alignSelf: 'stretch',
                     paddingVertical: 11,
-                    paddingHorizontal: 18,
+                    paddingHorizontal: 12,
                     borderRadius: 10,
                     backgroundColor: GAME_ACCENT,
+                    alignItems: 'center',
                   }}
                 >
-                  <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>{t('playAgain')}</Text>
+                  <Text
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.55}
+                    style={{
+                      color: 'white',
+                      fontWeight: '700',
+                      fontSize: 16,
+                      width: '100%',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {t('playAgain')}
+                  </Text>
                 </Pressable>
               </View>
             )}

@@ -7,7 +7,7 @@ import { getDefaultUiLanguageFromLocale } from '@/lib/defaultUiLanguage';
 import type { UiLanguage } from '@/lib/i18n/types';
 
 /** Incrémenter si la forme du JSON change (migration). */
-export const APP_SETTINGS_VERSION = 2;
+export const APP_SETTINGS_VERSION = 3;
 
 /** Dossier documents (inchangé pour conserver paramètres / historique après renommage affiché « FretPlay »). */
 const APP_DIR_NAME = 'notesbasse';
@@ -26,6 +26,8 @@ export type AppSettings = {
   indicateString: boolean;
   /** Langue d’interface (indépendante de la notation des notes sur le manche). */
   uiLanguage: UiLanguage;
+  /** False tant que l’utilisateur n’a pas terminé l’intro au premier lancement. */
+  onboardingCompleted: boolean;
 };
 
 export function getDefaultAppSettings(): AppSettings {
@@ -34,6 +36,7 @@ export function getDefaultAppSettings(): AppSettings {
     notation: getDefaultNotationFromLocale(),
     indicateString: false,
     uiLanguage: getDefaultUiLanguageFromLocale(),
+    onboardingCompleted: false,
   };
 }
 
@@ -56,7 +59,10 @@ function parseSettingsJson(raw: string | null): AppSettings | null {
     const rawIndicate = (o as { indicateString?: unknown }).indicateString;
     const indicateString = typeof rawIndicate === 'boolean' ? rawIndicate : false;
     const uiLanguage = coerceUiLanguage((o as { uiLanguage?: unknown }).uiLanguage) ?? getDefaultUiLanguageFromLocale();
-    return { settingsVersion, notation, indicateString, uiLanguage };
+    const rawOnboarding = (o as { onboardingCompleted?: unknown }).onboardingCompleted;
+    /** Absence de clé : traiter comme intro non terminée. */
+    const onboardingCompleted = typeof rawOnboarding === 'boolean' ? rawOnboarding : false;
+    return { settingsVersion, notation, indicateString, uiLanguage, onboardingCompleted };
   } catch {
     return null;
   }
@@ -112,6 +118,7 @@ export async function loadAppSettings(): Promise<AppSettings> {
       notation: legacy,
       indicateString: false,
       uiLanguage: getDefaultUiLanguageFromLocale(),
+      onboardingCompleted: false,
     };
     await saveAppSettings(migrated);
     await AsyncStorage.removeItem(LEGACY_NOTATION_KEY);

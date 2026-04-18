@@ -21,6 +21,10 @@ type AppSettingsContextValue = {
   setIndicateString: (value: boolean) => void;
   uiLanguage: UiLanguage;
   setUiLanguage: (value: UiLanguage) => void;
+  onboardingCompleted: boolean;
+  completeOnboarding: () => void;
+  /** Temporaire — tests : remet l’intro à afficher et persiste. */
+  resetOnboardingForDev: () => void;
   t: (key: TranslationKey) => string;
   isHydrated: boolean;
 };
@@ -85,6 +89,30 @@ export function NotationProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const completeOnboarding = useCallback(() => {
+    setSettings((prev) => {
+      const next: AppSettings = {
+        ...prev,
+        settingsVersion: APP_SETTINGS_VERSION,
+        onboardingCompleted: true,
+      };
+      void saveAppSettings(next);
+      return next;
+    });
+  }, []);
+
+  const resetOnboardingForDev = useCallback(() => {
+    setSettings((prev) => {
+      const next: AppSettings = {
+        ...prev,
+        settingsVersion: APP_SETTINGS_VERSION,
+        onboardingCompleted: false,
+      };
+      void saveAppSettings(next);
+      return next;
+    });
+  }, []);
+
   const t = useCallback(
     (key: TranslationKey) => translate(settings.uiLanguage, key),
     [settings.uiLanguage],
@@ -98,6 +126,9 @@ export function NotationProvider({ children }: { children: ReactNode }) {
       setIndicateString,
       uiLanguage: settings.uiLanguage,
       setUiLanguage,
+      onboardingCompleted: settings.onboardingCompleted,
+      completeOnboarding,
+      resetOnboardingForDev,
       t,
       isHydrated,
     }),
@@ -105,9 +136,12 @@ export function NotationProvider({ children }: { children: ReactNode }) {
       settings.notation,
       settings.indicateString,
       settings.uiLanguage,
+      settings.onboardingCompleted,
       setNotation,
       setIndicateString,
       setUiLanguage,
+      completeOnboarding,
+      resetOnboardingForDev,
       t,
       isHydrated,
     ],

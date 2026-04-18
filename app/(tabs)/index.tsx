@@ -87,7 +87,7 @@ function GameCard({
 }
 
 export default function Index() {
-  const { t } = useNotation();
+  const { t, resetOnboardingForDev } = useNotation();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -161,6 +161,35 @@ export default function Index() {
             isDark={isDark}
           />
         </View>
+
+        {/* TODO retirer : bouton temporaire pour retester l’onboarding */}
+        <Pressable
+          onPress={() => {
+            resetOnboardingForDev();
+            router.push('/onboarding');
+          }}
+          style={({ pressed }) => ({
+            marginTop: 28,
+            alignSelf: 'center',
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)',
+            backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+            opacity: pressed ? 0.85 : 1,
+          })}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '600',
+              color: isDark ? '#94a3b8' : '#64748b',
+            }}
+          >
+            {t('onboardingDevReplay')}
+          </Text>
+        </Pressable>
       </ScrollView>
     </View>
   );
