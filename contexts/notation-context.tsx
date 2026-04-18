@@ -1,19 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Localization from 'expo-localization';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
+import { APP_SETTINGS_VERSION, loadAppSettings, saveAppSettings, type AppSettings } from '@/storage/appSettings';
+import { getDefaultNotationFromLocale } from '@/lib/defaultNotation';
 
-const STORAGE_KEY = '@notesbasse/notation_system';
-
-export function getDefaultNotationFromLocale(): NotationSystem {
-  const locales = Localization.getLocales();
-  const lang = (locales[0]?.languageCode ?? 'fr').toLowerCase();
-  if (lang === 'en') {
-    return 'anglo-saxon';
-  }
-  return 'european';
-}
+export { getDefaultNotationFromLocale } from '@/lib/defaultNotation';
 
 type NotationContextValue = {
   notation: NotationSystem;
@@ -31,11 +22,9 @@ export function NotationProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     void (async () => {
       try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        const loaded = await loadAppSettings();
         if (cancelled) return;
-        if (stored === 'european' || stored === 'anglo-saxon') {
-          setNotationState(stored);
-        }
+        setNotationState(loaded.notation);
       } finally {
         if (!cancelled) {
           setIsHydrated(true);
@@ -49,7 +38,11 @@ export function NotationProvider({ children }: { children: ReactNode }) {
 
   const setNotation = useCallback((value: NotationSystem) => {
     setNotationState(value);
-    void AsyncStorage.setItem(STORAGE_KEY, value);
+    const payload: AppSettings = {
+      settingsVersion: APP_SETTINGS_VERSION,
+      notation: value,
+    };
+    void saveAppSettings(payload);
   }, []);
 
   const value = useMemo(

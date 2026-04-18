@@ -28,7 +28,7 @@ function getScoreEncouragementMessage(found: number): string {
     return "Pas mal ! Continue pour t'améliorer";
   }
   if (found <= 9) {
-    return 'Presque parfait, on y est presque !';
+    return 'Génial, encore un petit effort et tu es au!';
   }
   return 'Bravo, tu connais parfaitement tes notes ! Continue pour confirmer.';
 }
@@ -40,6 +40,7 @@ export default function Jeu1Screen() {
   const [selectedString, setSelectedString] = useState<number | null>(null);
   const [selectedFret, setSelectedFret] = useState<number | null>(null);
   const [selectedResult, setSelectedResult] = useState<'correct' | 'wrong' | null>(null);
+  const [wrongPlayedNote, setWrongPlayedNote] = useState<string | null>(null);
   const [targetNote, setTargetNote] = useState<string>(() =>
     getRandomNote(getNotesPoolForNotation(getDefaultNotationFromLocale())),
   );
@@ -64,6 +65,7 @@ export default function Jeu1Screen() {
     setSelectedString(null);
     setSelectedFret(null);
     setSelectedResult(null);
+    setWrongPlayedNote(null);
     setFoundCount(0);
     setMissedCount(0);
     setAttemptCount(0);
@@ -116,6 +118,12 @@ export default function Jeu1Screen() {
     setSelectedResult(isCorrect ? 'correct' : 'wrong');
     showResultEmoji(isCorrect ? '👍' : '😬');
 
+    if (isCorrect) {
+      setWrongPlayedNote(null);
+    } else {
+      setWrongPlayedNote(playedNote);
+    }
+
     setAttemptCount((prev) => prev + 1);
 
     if (isCorrect) {
@@ -152,6 +160,7 @@ export default function Jeu1Screen() {
           selectedString={selectedString}
           selectedFret={selectedFret}
           selectedResult={selectedResult}
+          wrongPlayedNote={wrongPlayedNote}
           onSelect={handleSelect}
         />
 

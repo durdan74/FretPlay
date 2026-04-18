@@ -17,14 +17,25 @@ import { getClosestStringFromX } from './noteUtils';
 /** Ordre d’affichage gauche → droite : corde 4 (grave) … corde 1 (aiguë), comme `stringXs`. */
 const OPEN_STRING_DISPLAY_ORDER = [4, 3, 2, 1] as const;
 
+const SELECTION_MARKER_SIZE = 46;
+const SELECTION_MARKER_HALF = SELECTION_MARKER_SIZE / 2;
+
 type BassNeckProps = {
   selectedString: number | null;
   selectedFret: number | null;
   selectedResult: 'correct' | 'wrong' | null;
+  /** Note réellement jouée (même graphie que la notation), affichée dans le rond si faux. */
+  wrongPlayedNote: string | null;
   onSelect: (stringNumber: number, fret: number) => void;
 };
 
-export function BassNeck({ selectedString, selectedFret, selectedResult, onSelect }: BassNeckProps) {
+export function BassNeck({
+  selectedString,
+  selectedFret,
+  selectedResult,
+  wrongPlayedNote,
+  onSelect,
+}: BassNeckProps) {
   const { notation } = useNotation();
   const [availableHeight, setAvailableHeight] = useState(0);
   const [neckWidth, setNeckWidth] = useState(0);
@@ -278,16 +289,36 @@ export function BassNeck({ selectedString, selectedFret, selectedResult, onSelec
                 pointerEvents="none"
                 style={{
                   position: 'absolute',
-                  left: stringXs[4 - selectedString] - 18,
-                  top: selectedFret * fretHeight + fretHeight / 2 - 18,
-                  width: 36,
-                  height: 36,
-                  borderRadius: 18,
+                  left: stringXs[4 - selectedString] - SELECTION_MARKER_HALF,
+                  top: selectedFret * fretHeight + fretHeight / 2 - SELECTION_MARKER_HALF,
+                  width: SELECTION_MARKER_SIZE,
+                  height: SELECTION_MARKER_SIZE,
+                  borderRadius: SELECTION_MARKER_HALF,
                   backgroundColor: selectedResult === 'correct' ? '#22c55e' : '#ef4444',
                   borderWidth: 2,
                   borderColor: 'black',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
-              />
+              >
+                {selectedResult === 'wrong' && wrongPlayedNote ? (
+                  <Text
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.45}
+                    style={{
+                      color: 'white',
+                      fontWeight: '800',
+                      fontSize: 15,
+                      maxWidth: SELECTION_MARKER_SIZE - 8,
+                      textAlign: 'center',
+                      paddingHorizontal: 2,
+                    }}
+                  >
+                    {wrongPlayedNote}
+                  </Text>
+                ) : null}
+              </View>
             )}
           </Pressable>
         </View>
