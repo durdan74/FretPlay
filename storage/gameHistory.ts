@@ -3,6 +3,7 @@ import { Directory, File, Paths } from 'expo-file-system';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
 
+/** Même dossier que les réglages — conserve l’historique après renommage app « FretPlay ». */
 const APP_DIR_NAME = 'notesbasse';
 const HISTORY_FILENAME = 'game_history.json';
 const ASYNC_FALLBACK_KEY = '@notesbasse/game_history.json';

@@ -1,8 +1,8 @@
 import type { UiLanguage } from '@/lib/i18n/types';
 
 const en = {
-  homeAppName: 'NotesBasse',
-  homeTagline: 'Train on the bass fretboard',
+  homeAppName: 'FretPlay',
+  homeTagline: 'Train on the fretboard',
   homeSectionModes: 'Modes',
   homeCardNeckHint: 'See the target note — tap the right spot on the neck.',
   homeCardFindHint: 'A green dot marks a fret — pick the correct note name.',
@@ -55,8 +55,8 @@ const en = {
 export type TranslationKey = keyof typeof en;
 
 const fr: Record<TranslationKey, string> = {
-  homeAppName: 'NotesBasse',
-  homeTagline: 'Entraîne-toi sur le manche de la basse',
+  homeAppName: 'FretPlay',
+  homeTagline: 'Entraîne-toi sur le manche',
   homeSectionModes: 'Modes',
   homeCardNeckHint: 'La note à jouer s’affiche — indique-la sur le manche.',
   homeCardFindHint: 'Un point vert sur le manche — choisis le bon nom de note.',
@@ -107,8 +107,8 @@ const fr: Record<TranslationKey, string> = {
 };
 
 const es: Record<TranslationKey, string> = {
-  homeAppName: 'NotesBasse',
-  homeTagline: 'Practica en el diapasón del bajo',
+  homeAppName: 'FretPlay',
+  homeTagline: 'Practica en el diapasón',
   homeSectionModes: 'Modos',
   homeCardNeckHint: 'Aparece la nota — señálala en el mástil.',
   homeCardFindHint: 'Un punto verde en el mástil — elige el nombre correcto.',
@@ -159,8 +159,8 @@ const es: Record<TranslationKey, string> = {
 };
 
 const de: Record<TranslationKey, string> = {
-  homeAppName: 'NotesBasse',
-  homeTagline: 'Übe am Bass-Griffbrett',
+  homeAppName: 'FretPlay',
+  homeTagline: 'Übe am Griffbrett',
   homeSectionModes: 'Modi',
   homeCardNeckHint: 'Die gesuchte Note erscheint — tippe die richtige Stelle am Griffbrett.',
   homeCardFindHint: 'Ein grüner Punkt am Griffbrett — wähle den richtigen Notennamen.',
@@ -211,8 +211,8 @@ const de: Record<TranslationKey, string> = {
 };
 
 const it: Record<TranslationKey, string> = {
-  homeAppName: 'NotesBasse',
-  homeTagline: 'Allenati sul manico del basso',
+  homeAppName: 'FretPlay',
+  homeTagline: 'Allenati sul manico',
   homeSectionModes: 'Modalità',
   homeCardNeckHint: 'Compare la nota da suonare — indicala sul manico.',
   homeCardFindHint: 'Un punto verde sul manico — scegli il nome giusto della nota.',

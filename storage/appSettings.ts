@@ -9,6 +9,7 @@ import type { UiLanguage } from '@/lib/i18n/types';
 /** Incrémenter si la forme du JSON change (migration). */
 export const APP_SETTINGS_VERSION = 2;
 
+/** Dossier documents (inchangé pour conserver paramètres / historique après renommage affiché « FretPlay »). */
 const APP_DIR_NAME = 'notesbasse';
 const SETTINGS_FILENAME = 'settings.json';
 
