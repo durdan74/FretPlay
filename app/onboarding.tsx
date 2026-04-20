@@ -7,6 +7,7 @@ import {
   Animated,
   BackHandler,
   Dimensions,
+  Image,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   Pressable,
@@ -153,10 +154,45 @@ export default function OnboardingScreen() {
     if (i === 0) {
       return (
         <View key={i} style={pad}>
-          <Text style={{ fontSize: 26, fontWeight: '700', color: titleColor, textAlign: 'center', marginBottom: 12 }}>
-            {t('onboardingP1s1Title')}
-          </Text>
-          <Text style={{ fontSize: 16, lineHeight: 24, color: bodyColor, textAlign: 'center' }}>{t('onboardingP1s1Body')}</Text>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            contentContainerStyle={{ paddingBottom: 16, flexGrow: 1 }}
+          >
+            <Text style={{ fontSize: 26, fontWeight: '700', color: titleColor, textAlign: 'center', marginBottom: 12 }}>
+              {t('onboardingP1s1Title')}
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: 24,
+                color: bodyColor,
+                textAlign: 'center',
+                marginBottom: 14,
+              }}
+            >
+              {t('onboardingP1s1Body')}
+            </Text>
+            <View
+              style={{
+                marginTop: 40,
+                width: '100%',
+                maxWidth: 400,
+                alignSelf: 'center',
+                height: Math.min(windowHeight * 0.32, 280),
+                borderRadius: 16,
+                overflow: 'hidden',
+                backgroundColor: illuBg,
+              }}
+            >
+              <Image
+                source={require('../assets/images/onboarding/welcome-neck.png')}
+                resizeMode="cover"
+                style={{ width: '100%', height: '100%' }}
+                accessibilityIgnoresInvertColors
+              />
+            </View>
+          </ScrollView>
         </View>
       );
     }
@@ -437,7 +473,7 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: pageBg }} edges={['top', 'bottom']}>
       <OnboardingLanguageCombo />
-      <View style={{ flex: 1, paddingTop: 96 }}>
+      <View style={{ flex: 1, paddingTop: 70 }}>
         <Animated.ScrollView
           ref={scrollRef}
           horizontal

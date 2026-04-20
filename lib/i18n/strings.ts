@@ -52,7 +52,7 @@ const en = {
   scoreEncouragement4: 'Brilliant — you really know your notes! Keep it up.',
   onboardingP1s1Title: 'Welcome',
   onboardingP1s1Body:
-    "You're about to practise reading the bass fretboard with two focused games.",
+    "FretPlay helps you learn where each note sits on your bass until it feels automatic and you don’t have to think about it. That’s a real asset for everything you’ll do next.",
   onboardingP1s2Title: 'Why learn the notes on the neck?',
   onboardingP1s2Body:
     'Knowing where each note lives builds motor memory, speeds up learning songs, and makes jamming less guesswork.',
@@ -160,7 +160,7 @@ const fr: Record<TranslationKey, string> = {
   scoreEncouragement4: 'Bravo, tu connais parfaitement tes notes ! Continue pour confirmer.',
   onboardingP1s1Title: 'Bienvenue',
   onboardingP1s1Body:
-    'Tu vas t’entraîner à lire le manche de la basse avec deux jeux ciblés.',
+    'FretPlay va t’aider à apprendre la position des notes sur ta basse, jusqu’à ce que ce soit automatique pour toi et que tu n’y penses plus. Ce sera une vraie aide pour la suite.',
   onboardingP1s2Title: 'Pourquoi apprendre les notes sur le manche ?',
   onboardingP1s2Body:
     'Savoir où est chaque note ancre la mémoire musculaire, accélère l’apprentissage des morceaux et rend les jams moins incertaines.',
@@ -265,7 +265,8 @@ const es: Record<TranslationKey, string> = {
   scoreEncouragement3: 'Genial, ¡un poco más y lo tienes!',
   scoreEncouragement4: '¡Bravo, dominas las notas! Sigue así.',
   onboardingP1s1Title: 'Bienvenido',
-  onboardingP1s1Body: 'Vas a practicar la lectura del mástil del bajo con dos juegos centrados.',
+  onboardingP1s1Body:
+    'FretPlay te ayuda a aprender dónde está cada nota en tu bajo, hasta que lo hagas casi sin pensar. Te vendrá muy bien para lo que viene después.',
   onboardingP1s2Title: '¿Por qué aprender las notas en el mástil?',
   onboardingP1s2Body:
     'Saber dónde está cada nota refuerza la memoria motriz, acelera aprender temas y hace más fluidas las jams.',
@@ -370,7 +371,8 @@ const de: Record<TranslationKey, string> = {
   scoreEncouragement3: 'Super — noch ein bisschen und du hast es!',
   scoreEncouragement4: 'Klasse — du kennst deine Noten wirklich! Mach weiter.',
   onboardingP1s1Title: 'Willkommen',
-  onboardingP1s1Body: 'Du übst das Lesen des Bass-Griffbretts mit zwei fokussierten Spielen.',
+  onboardingP1s1Body:
+    'FretPlay hilft dir, die Noten auf dem Bass zu finden, bis es fast von selbst geht und du nicht mehr nachdenken musst. Das hilft dir für alles, was danach kommt.',
   onboardingP1s2Title: 'Warum Noten auf dem Griffbrett lernen?',
   onboardingP1s2Body:
     'Wenn du weißt, wo jede Note liegt, festigt sich die Bewegungsablage, Songs gehen schneller, und Jams werden sicherer.',
@@ -475,7 +477,8 @@ const it: Record<TranslationKey, string> = {
   scoreEncouragement3: 'Ottimo — ancora un po’ e ci sei!',
   scoreEncouragement4: 'Bravissimo — conosci davvero le note! Continua così.',
   onboardingP1s1Title: 'Benvenuto',
-  onboardingP1s1Body: 'Ti allenerai a leggere il manico del basso con due giochi mirati.',
+  onboardingP1s1Body:
+    'FretPlay ti aiuta a imparare dove sta ogni nota sul basso, finché diventa quasi automatico e non ci pensi più. Ti sarà di grande aiuto per il resto del percorso.',
   onboardingP1s2Title: 'Perché imparare le note sul manico?',
   onboardingP1s2Body:
     'Sapere dove sta ogni nota consolida la memoria motoria, accelera lo studio dei brani e rende le jam più sicure.',
