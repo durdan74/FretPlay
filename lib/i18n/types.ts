@@ -1,3 +1,3 @@
-export type UiLanguage = 'fr' | 'en' | 'es' | 'de' | 'it';
+export type UiLanguage = 'fr';
 
-export const UI_LANGUAGES: readonly UiLanguage[] = ['fr', 'en', 'es', 'de', 'it'] as const;
+export const UI_LANGUAGES: readonly UiLanguage[] = ['fr'] as const;

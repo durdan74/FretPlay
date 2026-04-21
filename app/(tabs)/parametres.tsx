@@ -1,22 +1,12 @@
 import { router, type Href } from 'expo-router';
-import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold, useFonts } from '@expo-google-fonts/manrope';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
 import { useNotation } from '@/contexts/notation-context';
-import type { TranslationKey } from '@/lib/i18n/strings';
-import type { UiLanguage } from '@/lib/i18n/types';
-import { UI_LANGUAGES } from '@/lib/i18n/types';
 
 import { useParametresReturn } from './parametres-return-context';
-
-const LANGUAGE_LABEL_KEYS: Record<UiLanguage, TranslationKey> = {
-  fr: 'languageFr',
-  en: 'languageEn',
-  es: 'languageEs',
-  de: 'languageDe',
-  it: 'languageIt',
-};
 
 function RadioRow({
   label,
@@ -105,9 +95,13 @@ function CheckRow({
 }
 
 export default function ParametresScreen() {
+  const [fontsLoaded] = useFonts({
+    Manrope_400Regular,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+  });
   const { returnTab } = useParametresReturn();
-  const { notation, setNotation, indicateString, setIndicateString, uiLanguage, setUiLanguage, t } = useNotation();
-  const [languageModalOpen, setLanguageModalOpen] = useState(false);
+  const { notation, setNotation, indicateString, setIndicateString, t } = useNotation();
 
   const handleRetour = () => {
     const href: Href =
@@ -119,43 +113,38 @@ export default function ParametresScreen() {
     setNotation(value);
   };
 
-  const pickLanguage = (lang: UiLanguage) => {
-    setUiLanguage(lang);
-    setLanguageModalOpen(false);
-  };
-
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: 'white',
-        paddingTop: 64,
+        backgroundColor: '#ffffff',
+        paddingTop: 56,
         paddingBottom: 24,
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
       }}
     >
-      <Text style={{ fontSize: 28, fontWeight: '700', marginBottom: 12 }}>{t('parametresTitle')}</Text>
+      <Text style={{ fontSize: 30, fontWeight: '700', marginBottom: 18, color: '#1a2432', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+        {t('parametresTitle')}
+      </Text>
 
-      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>{t('parametresLanguageTitle')}</Text>
-      <Pressable
-        onPress={() => setLanguageModalOpen(true)}
+      <View
         style={{
+          marginBottom: 18,
+          borderRadius: 18,
           borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 10,
-          paddingVertical: 12,
+          borderColor: '#dce7f4',
+          backgroundColor: '#f7fbff',
           paddingHorizontal: 14,
-          marginBottom: 28,
-          backgroundColor: '#fafafa',
+          paddingTop: 14,
+          paddingBottom: 10,
         }}
       >
-        <Text style={{ fontSize: 17, color: '#111' }}>{t(LANGUAGE_LABEL_KEYS[uiLanguage])}</Text>
-      </Pressable>
-
-      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>{t('parametresNotationTitle')}</Text>
-      <Text style={{ fontSize: 14, color: '#555', marginBottom: 12 }}>{t('parametresNotationBody')}</Text>
-
-      <View style={{ marginBottom: 28 }}>
+        <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8, color: '#2a3a50', fontFamily: fontsLoaded ? 'Manrope_600SemiBold' : undefined }}>
+          {t('parametresNotationTitle')}
+        </Text>
+        <Text style={{ fontSize: 14, color: '#5f6f83', marginBottom: 12, lineHeight: 21, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
+          {t('parametresNotationBody')}
+        </Text>
         <RadioRow
           label={t('parametresNotationEu')}
           selected={notation === 'european'}
@@ -168,9 +157,24 @@ export default function ParametresScreen() {
         />
       </View>
 
-      <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8 }}>{t('parametresDifficultyTitle')}</Text>
-      <Text style={{ fontSize: 14, color: '#555', marginBottom: 10 }}>{t('parametresDifficultyBody')}</Text>
-      <View style={{ marginBottom: 28 }}>
+      <View
+        style={{
+          marginBottom: 24,
+          borderRadius: 18,
+          borderWidth: 1,
+          borderColor: '#dce7f4',
+          backgroundColor: '#f7fbff',
+          paddingHorizontal: 14,
+          paddingTop: 14,
+          paddingBottom: 10,
+        }}
+      >
+        <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8, color: '#2a3a50', fontFamily: fontsLoaded ? 'Manrope_600SemiBold' : undefined }}>
+          {t('parametresDifficultyTitle')}
+        </Text>
+        <Text style={{ fontSize: 14, color: '#5f6f83', marginBottom: 10, lineHeight: 21, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
+          {t('parametresDifficultyBody')}
+        </Text>
         <CheckRow
           label={t('parametresIndicateString')}
           checked={indicateString}
@@ -182,56 +186,16 @@ export default function ParametresScreen() {
         onPress={handleRetour}
         style={{
           alignSelf: 'flex-start',
-          paddingVertical: 12,
-          paddingHorizontal: 18,
-          borderRadius: 10,
-          backgroundColor: '#1f6feb',
+          paddingVertical: 13,
+          paddingHorizontal: 20,
+          borderRadius: 14,
+          backgroundColor: '#2F80ED',
         }}
       >
-        <Text style={{ color: 'white', fontSize: 17, fontWeight: '700' }}>{t('parametresRetour')}</Text>
+        <Text style={{ color: 'white', fontSize: 17, fontWeight: '700', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+          {t('parametresRetour')}
+        </Text>
       </Pressable>
-
-      <Modal transparent visible={languageModalOpen} animationType="fade" onRequestClose={() => setLanguageModalOpen(false)}>
-        <View style={{ flex: 1 }}>
-          <Pressable
-            style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.45)' }]}
-            onPress={() => setLanguageModalOpen(false)}
-          />
-          <View
-            pointerEvents="box-none"
-            style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}
-          >
-            <View
-              style={{
-                backgroundColor: 'white',
-                borderRadius: 14,
-                paddingVertical: 16,
-                paddingHorizontal: 8,
-              }}
-            >
-              <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 12, paddingHorizontal: 12 }}>
-                {t('languagePickTitle')}
-              </Text>
-              {UI_LANGUAGES.map((lang) => (
-                <Pressable
-                  key={lang}
-                  onPress={() => pickLanguage(lang)}
-                  style={{
-                    paddingVertical: 14,
-                    paddingHorizontal: 12,
-                    borderRadius: 8,
-                    backgroundColor: uiLanguage === lang ? '#e8f0fe' : 'transparent',
-                  }}
-                >
-                  <Text style={{ fontSize: 17, fontWeight: uiLanguage === lang ? '700' : '500' }}>
-                    {t(LANGUAGE_LABEL_KEYS[lang])}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }

@@ -41,7 +41,7 @@ export function getDefaultAppSettings(): AppSettings {
 }
 
 function coerceUiLanguage(raw: unknown): UiLanguage | null {
-  if (raw === 'fr' || raw === 'en' || raw === 'es' || raw === 'de' || raw === 'it') {
+  if (raw === 'fr') {
     return raw;
   }
   return null;

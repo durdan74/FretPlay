@@ -1,8 +1,8 @@
 import { Tabs } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useNotation } from '@/contexts/notation-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -22,6 +22,18 @@ function TabsNavigator() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarInactiveTintColor: '#7a8ca8',
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          borderTopColor: '#dce7f4',
+          height: 72,
+          paddingTop: 8,
+          paddingBottom: 10,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
         headerShown: false,
         tabBarButton: HapticTab,
       }}
@@ -30,7 +42,13 @@ function TabsNavigator() {
         name="index"
         options={{
           title: t('tabMenu'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialCommunityIcons
+              size={24}
+              name={focused ? 'home' : 'home-outline'}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -58,7 +76,13 @@ function TabsNavigator() {
         name="parametres"
         options={{
           title: t('tabSettings'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialCommunityIcons
+              size={24}
+              name={focused ? 'tune-variant' : 'tune-variant'}
+              color={color}
+            />
+          ),
         }}
         listeners={({ navigation }) => ({
           tabPress: () => {

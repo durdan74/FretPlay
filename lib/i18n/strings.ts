@@ -50,57 +50,57 @@ const en = {
   scoreEncouragement2: 'Not bad! Keep practising.',
   scoreEncouragement3: 'Great — a little more and you’re there!',
   scoreEncouragement4: 'Brilliant — you really know your notes! Keep it up.',
-  onboardingP1s1Title: 'Welcome',
+  onboardingP1s1Title: 'You know the theory. On the neck, you still hesitate.',
   onboardingP1s1Body:
-    "FretPlay helps you learn where each note sits on your bass until it feels automatic and you don’t have to think about it. That’s a real asset for everything you’ll do next.",
-  onboardingP1s2Title: 'Why learn the notes on the neck?',
+    'That delay between your brain and your fingers is exactly what blocks your groove, your confidence, and your speed.',
+  onboardingP1s2Title: 'Train 5 minutes. Feel the difference quickly.',
   onboardingP1s2Body:
-    'Knowing where each note lives builds motor memory, speeds up learning songs, and makes jamming less guesswork.',
-  onboardingP1s3Title: 'What FretPlay brings you',
+    'FretPlay turns note learning into short focused sessions you can stack every day, even with a busy schedule.',
+  onboardingP1s3Title: 'Built for bass players who want real progress',
   onboardingP1s3Body:
-    'Short sessions, clear feedback, and two complementary modes so you train sight, touch, and name recognition together.',
+    'No fluff. You get practical drills, instant feedback, and a clear path from hesitation to automatic note recognition.',
   onboardingIlluPlaceholder: '(illustration)',
 
-  onboardingP2s1Title: 'Game 1 — Note on the neck',
+  onboardingP2s1Title: 'Two mini-games. One goal: own the fretboard.',
   onboardingP2s1Body:
-    'You see the name of a note (in your chosen notation). Your job is to tap the right position on the four-string neck.',
-  onboardingP2s2Title: 'Find the target on the neck',
+    'Game 1 asks you to locate notes on the neck. Game 2 asks you to name notes from positions. Together, they lock in muscle + visual memory.',
+  onboardingP2s2Title: 'Created by a top bassist audience ecosystem',
   onboardingP2s2Body:
-    'The note to play appears at the top — tap the matching fret on the correct string. You get instant feedback.',
-  onboardingP2s3Title: 'Found and missed counters',
+    'This method is shaped for players who want practical, repeatable results. No random practice, just focused progression.',
+  onboardingP2s3Title: 'Used by top bassist learners',
   onboardingP2s3Body:
-    'During a round, the side panel shows how many notes you found and how many were missed so you can track progress.',
-  onboardingP2s4Title: 'Game 2 — Find the fret',
+    'Add your testimonial visual here (creator, students, community proof). This is your trust anchor in the onboarding flow.',
+  onboardingP2s4Title: 'Personalize your plan',
   onboardingP2s4Body:
-    'A green dot marks a fret on the neck. Choose the correct note name from several proposals.',
-  onboardingP2s5Title: 'Pick the right name',
+    'Tell us where you are now so we can adapt the first sessions and help you build momentum from day one.',
+  onboardingP2s5Title: 'In 2-3 weeks, notes feel natural',
   onboardingP2s5Body:
-    'Look at the dot on the neck, then tap one of the suggested note chips. Use “Next” between rounds.',
-  onboardingP2s6Title: 'More to come',
-  onboardingP2s6Body: 'Other games and drills will be added over time to keep your practice fresh.',
+    'Stay consistent for a few minutes per day and you will react faster on the neck during songs, jams, and practice.',
+  onboardingP2s6Title: 'Start free now',
+  onboardingP2s6Body: 'No paywall today. Begin your training, feel progress, then we unlock the rest later.',
 
-  onboardingQ1Title: 'How would you rate your knowledge of notes on the neck?',
-  onboardingQ1o0: 'I hardly know any',
-  onboardingQ1o1: 'I know some notes',
-  onboardingQ1o2: 'I know the open-string notes',
-  onboardingQ1o3: 'I know all the notes but I’m still slow',
+  onboardingQ1Title: 'Where are you right now on the fretboard?',
+  onboardingQ1o0: 'Beginner: I get lost quickly',
+  onboardingQ1o1: 'Intermediate: I know some landmarks',
+  onboardingQ1o2: 'I know open strings mostly',
+  onboardingQ1o3: 'Advanced but still too slow',
 
-  onboardingQ2Title: 'How often can you play?',
-  onboardingQ2o0: 'Once a week',
-  onboardingQ2o1: '2–3 times a week',
-  onboardingQ2o2: 'Once a day',
-  onboardingQ2o3: 'Several times a day',
+  onboardingQ2Title: 'What is your realistic rhythm?',
+  onboardingQ2o0: '1 short session / week',
+  onboardingQ2o1: '2-3 sessions / week',
+  onboardingQ2o2: '5 minutes every day',
+  onboardingQ2o3: 'Daily + extra practice',
 
-  onboardingSummaryTitle: 'Your answers',
+  onboardingSummaryTitle: 'Your starter profile',
   onboardingSummaryLevelLine: 'Level:',
   onboardingSummaryTimeLine: 'How often:',
   onboardingSummaryEmpty: '—',
-  onboardingSummaryPlaceholder: 'Personalised tips based on your answers will appear here later.',
+  onboardingSummaryPlaceholder: 'We use this to shape your first training sessions and build quick wins.',
 
-  onboardingTrialTitle: 'Try FretPlay free',
+  onboardingTrialTitle: 'Start your first bass training now',
   onboardingTrialBody:
-    'You can play up to five rounds for free to try the app. When you are ready, open the main menu.',
-  onboardingTrialCta: "Let's go!",
+    'You are ready. Start for free and complete your first sessions before we unlock advanced access later.',
+  onboardingTrialCta: 'Start free',
 
   onboardingContinue: 'Continue',
   onboardingDevReplay: 'Onboarding again (dev)',
@@ -158,57 +158,57 @@ const fr: Record<TranslationKey, string> = {
   scoreEncouragement2: 'Pas mal ! Continue pour t’améliorer',
   scoreEncouragement3: 'Génial, encore un petit effort et tu es au top !',
   scoreEncouragement4: 'Bravo, tu connais parfaitement tes notes ! Continue pour confirmer.',
-  onboardingP1s1Title: 'Bienvenue',
+  onboardingP1s1Title: 'Tu connais la théorie. Sur le manche, tu hésites encore.',
   onboardingP1s1Body:
-    'FretPlay va t’aider à apprendre la position des notes sur ta basse, jusqu’à ce que ce soit automatique pour toi et que tu n’y penses plus. Ce sera une vraie aide pour la suite.',
-  onboardingP1s2Title: 'Pourquoi apprendre les notes sur le manche ?',
+    'Ce décalage entre ce que tu sais et ce que tes doigts font vraiment ralentit ton groove, ta confiance et ta progression.',
+  onboardingP1s2Title: '5 minutes d’entraînement. De vrais progrès.',
   onboardingP1s2Body:
-    'Savoir où est chaque note ancre la mémoire musculaire, accélère l’apprentissage des morceaux et rend les jams moins incertaines.',
-  onboardingP1s3Title: 'Ce que FretPlay t’apporte',
+    'FretPlay transforme les notes en sessions courtes et ciblées, faciles à tenir même avec un planning chargé.',
+  onboardingP1s3Title: 'Conçu pour les bassistes qui veulent du concret',
   onboardingP1s3Body:
-    'Des sessions courtes, un retour clair, et deux modes complémentaires pour lier vue, toucher et nom des notes.',
+    'Pas de blabla. Des drills pratiques, un feedback immédiat, et un parcours clair pour passer de l’hésitation à l’automatisme.',
   onboardingIlluPlaceholder: '(illustration)',
 
-  onboardingP2s1Title: 'Jeu 1 — Note sur le manche',
+  onboardingP2s1Title: '2 mini-jeux. 1 objectif : maîtriser le manche.',
   onboardingP2s1Body:
-    'Tu vois le nom d’une note (selon ta notation). Il faut toucher la bonne case sur le manche à quatre cordes.',
-  onboardingP2s2Title: 'Trouver la bonne case',
+    'Jeu 1 : trouver la note sur le manche. Jeu 2 : nommer la note depuis une position. Ensemble, ça verrouille mémoire visuelle et musculaire.',
+  onboardingP2s2Title: 'Méthode portée par un écosystème bassiste',
   onboardingP2s2Body:
-    'La note à jouer s’affiche en haut — tape la frette correspondante sur la bonne corde. Tu as un retour immédiat.',
-  onboardingP2s3Title: 'Compteurs trouvées / ratées',
+    'Approche pensée pour des musiciens qui veulent des résultats rapides et mesurables, pas des exercices au hasard.',
+  onboardingP2s3Title: 'Utilisé par des bassistes exigeants',
   onboardingP2s3Body:
-    'Pendant une partie, le panneau latéral indique combien de notes tu as trouvées et combien tu en as ratées pour suivre ta progression.',
-  onboardingP2s4Title: 'Jeu 2 — Trouve la case',
+    'Ajoute ici ton visuel testimonial (créateur, élèves, communauté). C’est ton ancre de crédibilité dans le funnel.',
+  onboardingP2s4Title: 'Personnalise ton départ',
   onboardingP2s4Body:
-    'Un point vert marque une case sur le manche. Choisis le bon nom de note parmi plusieurs propositions.',
-  onboardingP2s5Title: 'Choisir le bon nom',
+    'Dis-nous ton niveau actuel pour adapter les premières sessions et créer du momentum dès le jour 1.',
+  onboardingP2s5Title: 'En 2-3 semaines, les notes deviennent plus naturelles',
   onboardingP2s5Body:
-    'Regarde le point sur le manche, puis touche une des pastilles de notes proposées. Utilise « Suivant » entre les manches.',
-  onboardingP2s6Title: 'Et après ?',
-  onboardingP2s6Body: 'D’autres jeux et exercices arriveront au fil des mises à jour pour varier l’entraînement.',
+    'Avec quelques minutes par jour, tu gagnes en réflexe sur le manche pour les morceaux, les jams et la pratique perso.',
+  onboardingP2s6Title: 'Commence gratuitement',
+  onboardingP2s6Body: 'Pas de paywall immédiat. Tu testes, tu progresses, puis on débloque la suite ensuite.',
 
-  onboardingQ1Title: 'Quel niveau te donnes-tu en connaissance des notes sur le manche ?',
-  onboardingQ1o0: 'Je n’en connais aucune',
-  onboardingQ1o1: 'Je connais quelques notes',
-  onboardingQ1o2: 'Je connais les notes des cordes à vide',
-  onboardingQ1o3: 'Je connais toutes les notes mais je mets trop de temps',
+  onboardingQ1Title: 'Où en es-tu aujourd’hui sur le manche ?',
+  onboardingQ1o0: 'Débutant : je me perds vite',
+  onboardingQ1o1: 'Intermédiaire : quelques repères',
+  onboardingQ1o2: 'Je connais surtout les cordes à vide',
+  onboardingQ1o3: 'Avancé mais encore trop lent',
 
-  onboardingQ2Title: 'Combien de temps as-tu pour jouer ?',
-  onboardingQ2o0: '1 fois par semaine',
-  onboardingQ2o1: '2 à 3 fois par semaine',
-  onboardingQ2o2: 'Une fois par jour',
-  onboardingQ2o3: 'Plusieurs fois par jour',
+  onboardingQ2Title: 'Quel rythme est réaliste pour toi ?',
+  onboardingQ2o0: '1 courte session / semaine',
+  onboardingQ2o1: '2 à 3 sessions / semaine',
+  onboardingQ2o2: '5 minutes par jour',
+  onboardingQ2o3: 'Tous les jours + extras',
 
-  onboardingSummaryTitle: 'Synthèse de tes réponses',
+  onboardingSummaryTitle: 'Ton profil de départ',
   onboardingSummaryLevelLine: 'Niveau :',
   onboardingSummaryTimeLine: 'Fréquence :',
   onboardingSummaryEmpty: '—',
-  onboardingSummaryPlaceholder: 'Des conseils personnalisés selon tes réponses apparaîtront ici plus tard.',
+  onboardingSummaryPlaceholder: 'On s’en sert pour ajuster tes premières sessions et créer des victoires rapides.',
 
-  onboardingTrialTitle: 'Essaie FretPlay gratuitement',
+  onboardingTrialTitle: 'Lance ton premier entraînement basse',
   onboardingTrialBody:
-    'Tu peux jouer jusqu’à cinq parties gratuites pour découvrir l’app. Quand tu es prêt, ouvre le menu principal.',
-  onboardingTrialCta: 'C’est parti !',
+    'Tu es prêt. Commence gratuitement, valide quelques sessions, puis on ouvrira l’accès avancé ensuite.',
+  onboardingTrialCta: 'Commencer gratuitement',
 
   onboardingContinue: 'Continuer',
   onboardingDevReplay: 'Revoir l’intro (test)',
@@ -532,16 +532,15 @@ const it: Record<TranslationKey, string> = {
   onboardingDevReplay: 'Rivedi intro (test)',
 };
 
-const STRINGS: Record<UiLanguage, Record<TranslationKey, string>> = {
-  fr,
-  en,
-  es,
-  de,
-  it,
-};
+void en;
+void es;
+void de;
+void it;
+
+const STRINGS: Record<UiLanguage, Record<TranslationKey, string>> = { fr };
 
 export function translate(lang: UiLanguage, key: TranslationKey): string {
-  return STRINGS[lang][key] ?? STRINGS.en[key];
+  return STRINGS[lang][key] ?? STRINGS.fr[key];
 }
 
 const SCORE_ENCOURAGEMENT_KEYS = [
