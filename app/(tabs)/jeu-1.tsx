@@ -13,8 +13,8 @@ import { StatBlock } from '@/components/game/StatBlock';
 import { GAME_ACCENT, GAME_FOUND, GAME_MISSED, getGameScreenTheme } from '@/constants/gameScreen';
 import { useNotation } from '@/contexts/notation-context';
 import { usePurchases } from '@/contexts/purchases-context';
-import { fillTemplate } from '@/lib/i18n/template';
 import { encouragementForFound } from '@/lib/i18n/strings';
+import { fillTemplate } from '@/lib/i18n/template';
 import { appendGameSession } from '@/storage/gameHistory';
 import { FREE_PLAY_LIMIT, getPaywallAccessState, incrementFreeSessionUsed } from '@/storage/paywallAccess';
 
