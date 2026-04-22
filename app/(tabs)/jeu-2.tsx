@@ -8,9 +8,11 @@ import { getNotesPoolForNotation, NUMBER_OF_FRETS, type NotationSystem } from '@
 import { StatBlock } from '@/components/game/StatBlock';
 import { GAME_ACCENT, GAME_FOUND, GAME_MISSED, getGameScreenTheme } from '@/constants/gameScreen';
 import { useNotation } from '@/contexts/notation-context';
+import { usePurchases } from '@/contexts/purchases-context';
 import { encouragementForFound } from '@/lib/i18n/strings';
 import { getDefaultAppSettings } from '@/storage/appSettings';
 import { appendGameSession } from '@/storage/gameHistory';
+import { FREE_PLAY_LIMIT, getPaywallAccessState, incrementFreeSessionUsed } from '@/storage/paywallAccess';
 
 import { BassNeck } from './bass/BassNeck';
 import { getNoteForPosition, getPitchClass, samePitch } from './bass/noteUtils';
@@ -64,6 +66,7 @@ function createRound(notationArg: NotationSystem): RoundState {
 
 export default function Jeu2Screen() {
   const { notation, isHydrated, t, uiLanguage } = useNotation();
+  const { isEntitled } = usePurchases();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -112,6 +115,20 @@ export default function Jeu2Screen() {
     }
   }, [isHydrated, notation, resetFullGame, startNewRound]);
 
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      if (isEntitled) return;
+      const access = await getPaywallAccessState();
+      if (!cancelled && !access.locallyUnlocked && access.freeSessionsUsed >= FREE_PLAY_LIMIT) {
+        router.replace('/paywall');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isEntitled]);
+
   const onPickNote = (note: string) => {
     if (attemptCount >= TOTAL_ATTEMPTS) return;
     if (pickedNote !== null) return;
@@ -144,15 +161,23 @@ export default function Jeu2Screen() {
       const endedAt = Date.now();
       const startedAt = gameStartedAtRef.current ?? endedAt;
       gameStartedAtRef.current = null;
-      void appendGameSession({
-        playedAt: new Date(endedAt).toISOString(),
-        notation,
-        attempts: TOTAL_ATTEMPTS,
-        found: nextFound,
-        missed: nextMissed,
-        durationMs: Math.max(0, endedAt - startedAt),
-        gameKind: 'jeu-2',
-      });
+      void (async () => {
+        await appendGameSession({
+          playedAt: new Date(endedAt).toISOString(),
+          notation,
+          attempts: TOTAL_ATTEMPTS,
+          found: nextFound,
+          missed: nextMissed,
+          durationMs: Math.max(0, endedAt - startedAt),
+          gameKind: 'jeu-2',
+        });
+        if (!isEntitled) {
+          const access = await getPaywallAccessState();
+          if (!access.locallyUnlocked) {
+            await incrementFreeSessionUsed();
+          }
+        }
+      })();
       return;
     }
 
@@ -354,7 +379,20 @@ export default function Jeu2Screen() {
                 }}
               >
                 <Pressable
-                  onPress={resetFullGame}
+                  onPress={() => {
+                    void (async () => {
+                      if (isEntitled) {
+                        resetFullGame();
+                        return;
+                      }
+                      const access = await getPaywallAccessState();
+                      if (!access.locallyUnlocked && access.freeSessionsUsed >= FREE_PLAY_LIMIT) {
+                        router.replace('/paywall');
+                        return;
+                      }
+                      resetFullGame();
+                    })();
+                  }}
                   style={{
                     alignSelf: 'stretch',
                     paddingVertical: 11,

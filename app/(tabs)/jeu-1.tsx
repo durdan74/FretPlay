@@ -12,9 +12,11 @@ import {
 import { StatBlock } from '@/components/game/StatBlock';
 import { GAME_ACCENT, GAME_FOUND, GAME_MISSED, getGameScreenTheme } from '@/constants/gameScreen';
 import { useNotation } from '@/contexts/notation-context';
+import { usePurchases } from '@/contexts/purchases-context';
 import { fillTemplate } from '@/lib/i18n/template';
 import { encouragementForFound } from '@/lib/i18n/strings';
 import { appendGameSession } from '@/storage/gameHistory';
+import { FREE_PLAY_LIMIT, getPaywallAccessState, incrementFreeSessionUsed } from '@/storage/paywallAccess';
 
 import { BassNeck } from './bass/BassNeck';
 import { getNoteForPosition, getOpenStringLabel, samePitch } from './bass/noteUtils';
@@ -47,6 +49,7 @@ function pickRandomStringTarget(
 
 export default function Jeu1Screen() {
   const { notation, isHydrated, indicateString, t, uiLanguage } = useNotation();
+  const { isEntitled } = usePurchases();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -125,6 +128,20 @@ export default function Jeu1Screen() {
     }
   }, [isHydrated, notation, indicateString, resetGame]);
 
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      if (isEntitled) return;
+      const access = await getPaywallAccessState();
+      if (!cancelled && !access.locallyUnlocked && access.freeSessionsUsed >= FREE_PLAY_LIMIT) {
+        router.replace('/paywall');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isEntitled]);
+
   const showResultEmoji = (emoji: string) => {
     if (emojiTimeoutRef.current) {
       clearTimeout(emojiTimeoutRef.current);
@@ -183,15 +200,23 @@ export default function Jeu1Screen() {
       const endedAt = Date.now();
       const startedAt = gameStartedAtRef.current ?? endedAt;
       gameStartedAtRef.current = null;
-      void appendGameSession({
-        playedAt: new Date(endedAt).toISOString(),
-        notation,
-        attempts: TOTAL_ATTEMPTS,
-        found: nextFound,
-        missed: nextMissed,
-        durationMs: Math.max(0, endedAt - startedAt),
-        gameKind: 'jeu-1',
-      });
+      void (async () => {
+        await appendGameSession({
+          playedAt: new Date(endedAt).toISOString(),
+          notation,
+          attempts: TOTAL_ATTEMPTS,
+          found: nextFound,
+          missed: nextMissed,
+          durationMs: Math.max(0, endedAt - startedAt),
+          gameKind: 'jeu-1',
+        });
+        if (!isEntitled) {
+          const access = await getPaywallAccessState();
+          if (!access.locallyUnlocked) {
+            await incrementFreeSessionUsed();
+          }
+        }
+      })();
     }
   };
 
@@ -341,7 +366,20 @@ export default function Jeu1Screen() {
                 }}
               >
                 <Pressable
-                  onPress={resetGame}
+                  onPress={() => {
+                    void (async () => {
+                      if (isEntitled) {
+                        resetGame();
+                        return;
+                      }
+                      const access = await getPaywallAccessState();
+                      if (!access.locallyUnlocked && access.freeSessionsUsed >= FREE_PLAY_LIMIT) {
+                        router.replace('/paywall');
+                        return;
+                      }
+                      resetGame();
+                    })();
+                  }}
                   style={{
                     alignSelf: 'stretch',
                     paddingVertical: 11,
