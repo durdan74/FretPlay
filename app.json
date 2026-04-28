@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fretplay.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -45,6 +46,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "65836ffd-c017-4f5f-98ad-d31e54950bf7"
+      }
+    },
+    "owner": "daniel-durand"
   }
 }
