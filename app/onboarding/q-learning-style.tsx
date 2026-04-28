@@ -4,7 +4,7 @@ import { SingleChoiceQuestion } from '@/components/onboarding/SingleChoiceQuesti
 import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
-const LEARNING_STYLE_OPTIONS = ['En cours / prof', 'Autodidacte', 'Les deux'] as const;
+const LEARNING_STYLE_OPTIONS = ['En cours / prof', 'Autodidacte', 'Les deux', 'tutos youtube'] as const;
 
 export default function OnboardingLearningStyleScreen() {
   const { setLearningStyle } = useOnboardingFlow();

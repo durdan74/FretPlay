@@ -5,10 +5,10 @@ import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
 const BLOCKERS_OPTIONS = [
-  'Ça va trop vite',
+  'Le rythme',
   'Trop de choses à penser en même temps',
   "Je me concentre sur une main, l'autre suit mal",
-  'Je connais la théorie, mais je cherche encore les notes',
+  'Je connais un peu la théorie, mais je cherche encore les notes',
   'Je manque de régularité',
   'Je perds mes moyens en condition réelle (jam/scène)',
 ] as const;

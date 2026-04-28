@@ -7,8 +7,8 @@ export default function OnboardingIntroSolutionScreen() {
   return (
     <OnboardingMessageScreen
       progress={getOnboardingProgress('intro_solution')}
-      title="FretPlay, c'est 5 à 10 min par jour. Pas plus."
-      description="Deux mini-jeux pensés pour ancrer les notes du manche dans ta mémoire, avec un feedback immédiat à chaque réponse."
+      title="FretPlay, c'est quelques minutes. Pas plus."
+      description="Des mini-jeux pensés pour ancrer les notes du manche dans ta mémoire, avec un feedback immédiat à chaque réponse. Les notes deviennent naturelles et tu progresseras vite."
       onBack={() => router.back()}
       onNext={() => router.push('/onboarding/q-experience')}
     />

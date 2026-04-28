@@ -5,8 +5,8 @@ import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
 const GOAL_OPTIONS = [
-  'Progresser rapidement',
-  'Jouer plus proprement',
+  'Communiquer plus facilement avec les autres musiciens',
+  'Mieux comprendre les tutoriels de bassiste',
   'Jouer sur scène',
   'Devenir pro',
   'M’amuser et rester régulier',

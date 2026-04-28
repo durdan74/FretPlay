@@ -1,5 +1,5 @@
-import { Redirect, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Redirect, router } from 'expo-router';
 import React from 'react';
 import {
   Animated,
@@ -23,7 +23,7 @@ const LANDING_SLIDES = [
   {
     id: 'landing-1',
     title: 'Maîtrise le manche plus vite',
-    description: 'Des exercices courts pour ancrer les notes et jouer avec plus de confiance.',
+    description: 'Des exercices courts pour ancre r les notes et jouer avec plus de confiance.',
     icon: '🎸',
   },
   {
@@ -34,7 +34,7 @@ const LANDING_SLIDES = [
   },
   {
     id: 'landing-3',
-    title: '2 mini-jeux ultra efficaces',
+    title: 'des mini-jeux ultra efficaces',
     description: 'Travaille à la fois le repérage visuel et la mémoire musculaire du manche.',
     icon: '🎯',
   },
@@ -97,7 +97,7 @@ export default function RootIndex() {
                 lineHeight: 22,
               }}
             >
-              L’app d’entraînement basse pour automatiser les notes sur le manche.
+              L’app d’entraînement basse pour connaitre les notes sur le manche instantanément.
             </Text>
           </View>
 

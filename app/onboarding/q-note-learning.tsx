@@ -7,8 +7,8 @@ import { getOnboardingProgress } from '@/utils/onboardingProgress';
 const NOTE_LEARNING_OPTIONS = [
   'Je ne les travaille pas vraiment',
   'Je joue des morceaux en espérant les retenir',
-  'Je fais des exercices de temps en temps',
-  'J’ai une méthode régulière',
+  "Je fais des exercices d'apprentissage de notes",
+  "J'essaie d'imprimer visuellement les notes sur le manche",
   'Autre',
 ] as const;
 

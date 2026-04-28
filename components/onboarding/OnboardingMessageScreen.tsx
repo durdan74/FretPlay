@@ -1,6 +1,6 @@
 import { Manrope_400Regular, Manrope_700Bold, useFonts } from '@expo-google-fonts/manrope';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ONBOARDING_COLORS } from './theme';
@@ -15,6 +15,7 @@ export function OnboardingMessageScreen({
   onBack,
   onNext,
   nextLabel = 'Continuer',
+  disableBack = false,
 }: {
   progress: number;
   title: string;
@@ -22,6 +23,7 @@ export function OnboardingMessageScreen({
   onBack: () => void;
   onNext: () => void;
   nextLabel?: string;
+  disableBack?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
@@ -32,9 +34,15 @@ export function OnboardingMessageScreen({
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }} edges={['top', 'bottom']}>
       <OnboardingContainer>
-        <View style={{ flex: 1, paddingTop: 20, paddingHorizontal: 20 }}>
-          <OnboardingHeader progress={progress} onBack={onBack} />
+        <View style={{ paddingTop: 20, paddingHorizontal: 20 }}>
+          <OnboardingHeader progress={progress} onBack={onBack} disableBack={disableBack} />
+        </View>
 
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+        >
           <Text
             style={{
               fontSize: 33,
@@ -53,8 +61,7 @@ export function OnboardingMessageScreen({
               borderWidth: 1,
               borderColor: '#d8e4f2',
               backgroundColor: '#eff5ff',
-              flex: 1,
-              minHeight: 240,
+              height: 240,
               alignItems: 'center',
               justifyContent: 'center',
               paddingHorizontal: 16,
@@ -76,6 +83,7 @@ export function OnboardingMessageScreen({
           <Text
             style={{
               marginTop: 18,
+              marginBottom: 8,
               color: ONBOARDING_COLORS.textSecondary,
               fontSize: 16,
               lineHeight: 23,
@@ -84,7 +92,7 @@ export function OnboardingMessageScreen({
           >
             {description}
           </Text>
-        </View>
+        </ScrollView>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: insets.bottom + 20 }}>
           <AnimatedNextButton onPress={onNext} title={nextLabel} />
