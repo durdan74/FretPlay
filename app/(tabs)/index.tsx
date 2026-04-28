@@ -368,7 +368,7 @@ export default function Index() {
         <Pressable
           onPress={() => {
             resetOnboardingForDev();
-            router.replace('/');
+            router.replace('/onboarding');
           }}
           style={({ pressed }) => ({
             marginTop: 28,

@@ -134,7 +134,7 @@ export default function Jeu1Screen() {
       if (isEntitled) return;
       const access = await getPaywallAccessState();
       if (!cancelled && !access.locallyUnlocked && access.freeSessionsUsed >= FREE_PLAY_LIMIT) {
-        router.replace('/paywall');
+        router.replace('/paywall' as Href);
       }
     })();
     return () => {
@@ -374,7 +374,7 @@ export default function Jeu1Screen() {
                       }
                       const access = await getPaywallAccessState();
                       if (!access.locallyUnlocked && access.freeSessionsUsed >= FREE_PLAY_LIMIT) {
-                        router.replace('/paywall');
+                        router.replace('/paywall' as Href);
                         return;
                       }
                       resetGame();
