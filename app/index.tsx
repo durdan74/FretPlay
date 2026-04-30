@@ -40,6 +40,8 @@ const LANDING_SLIDES = [
   },
 ] as const;
 
+const FORCE_PAYWALL_ON_RELOAD = __DEV__ && process.env.EXPO_PUBLIC_FORCE_PAYWALL_ON_RELOAD === 'true';
+
 /**
  * Point d’entrée : après hydratation des paramètres, intro ou onglets.
  */
@@ -62,6 +64,10 @@ export default function RootIndex() {
 
   if (!isHydrated) {
     return <View style={{ flex: 1, backgroundColor: bg }} />;
+  }
+
+  if (FORCE_PAYWALL_ON_RELOAD) {
+    return <Redirect href="/paywall" />;
   }
 
   if (onboardingCompleted) {

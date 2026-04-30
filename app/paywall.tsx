@@ -11,7 +11,7 @@ import { fetchCurrentPackages } from '@/lib/purchases/offerings';
 import { loadGameHistory } from '@/storage/gameHistory';
 import { markLocallyUnlocked } from '@/storage/paywallAccess';
 
-type PlanType = 'annual' | 'weekly';
+type PlanType = 'annual' | 'monthly';
 
 function formatEuro(amount: number): string {
   return `${amount.toFixed(2).replace('.', ',')} €`;
@@ -63,8 +63,8 @@ export default function PaywallScreen() {
   }, [isEntitled]);
 
   const annualPackage = packages.find((p) => p.packageType === PACKAGE_TYPE.ANNUAL) ?? null;
-  const weeklyPackage = packages.find((p) => p.packageType === PACKAGE_TYPE.WEEKLY) ?? null;
-  const selectedPackage = selectedPlan === 'annual' ? annualPackage : weeklyPackage;
+  const monthlyPackage = packages.find((p) => p.packageType === PACKAGE_TYPE.MONTHLY) ?? null;
+  const selectedPackage = selectedPlan === 'annual' ? annualPackage : monthlyPackage;
 
   const handleBuy = async () => {
     if (!isConfigured) {
@@ -322,12 +322,12 @@ export default function PaywallScreen() {
             </Pressable>
 
             <Pressable
-              onPress={() => setSelectedPlan('weekly')}
+              onPress={() => setSelectedPlan('monthly')}
               style={{
                 borderRadius: 18,
                 borderWidth: 2,
-                borderColor: selectedPlan === 'weekly' ? '#2f80ed' : '#dce7f4',
-                backgroundColor: selectedPlan === 'weekly' ? '#f2f8ff' : '#ffffff',
+                borderColor: selectedPlan === 'monthly' ? '#2f80ed' : '#dce7f4',
+                backgroundColor: selectedPlan === 'monthly' ? '#f2f8ff' : '#ffffff',
                 padding: 14,
               }}
             >
@@ -339,21 +339,21 @@ export default function PaywallScreen() {
                       height: 22,
                       borderRadius: 11,
                       borderWidth: 2,
-                      borderColor: selectedPlan === 'weekly' ? '#2f80ed' : '#c5d4e8',
+                      borderColor: selectedPlan === 'monthly' ? '#2f80ed' : '#c5d4e8',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    {selectedPlan === 'weekly' ? (
+                    {selectedPlan === 'monthly' ? (
                       <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: '#2f80ed' }} />
                     ) : null}
                   </View>
                   <Text style={{ color: '#1c2430', fontSize: 16, lineHeight: 21, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
-                    Hebdo
+                    Mensuel
                   </Text>
                 </View>
                 <Text style={{ color: '#1c2430', fontSize: 16, lineHeight: 21, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
-                  {weeklyPackage ? `${weeklyPackage.product.priceString} / semaine` : '5,99 € / semaine'}
+                  {monthlyPackage ? `${monthlyPackage.product.priceString} / mois` : '6,99 € / mois'}
                 </Text>
               </View>
             </Pressable>
@@ -405,8 +405,8 @@ export default function PaywallScreen() {
         >
           {selectedPlan === 'annual' && annualPackage
             ? `${annualPackage.product.priceString} / an (${formatEuro(annualPackage.product.price / 12)} / mois)`
-            : selectedPlan === 'weekly' && weeklyPackage
-              ? `${weeklyPackage.product.priceString} / semaine`
+            : selectedPlan === 'monthly' && monthlyPackage
+              ? `${monthlyPackage.product.priceString} / mois`
               : 'Tarifs affichés dans la boutique au moment du paiement.'}
         </Text>
       </ScrollView>

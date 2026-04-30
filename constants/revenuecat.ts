@@ -6,4 +6,4 @@
  * Les produits eux-mêmes (SKUs, durées) se configurent dans App Store Connect et Google Play Console,
  * puis sont liés dans RevenueCat.
  */
-export const REVENUECAT_ENTITLEMENT_ID = 'premium';
+export const REVENUECAT_ENTITLEMENT_ID = 'Full access';
