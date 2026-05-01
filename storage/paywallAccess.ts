@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const FREE_PLAY_LIMIT = 5;
 
 const PAYWALL_ACCESS_KEY = '@notesbasse/paywall_access_v1';
+const UNLOCK_PAYWALL_FOR_DEV =
+  __DEV__ && process.env.EXPO_PUBLIC_UNLOCK_PAYWALL_FOR_DEV === 'true';
 
 type PaywallAccessState = {
   freeSessionsUsed: number;
@@ -20,6 +22,9 @@ async function saveState(state: PaywallAccessState): Promise<void> {
 
 export async function getPaywallAccessState(): Promise<PaywallAccessState> {
   try {
+    if (UNLOCK_PAYWALL_FOR_DEV) {
+      return { ...DEFAULT_STATE, locallyUnlocked: true };
+    }
     const raw = await AsyncStorage.getItem(PAYWALL_ACCESS_KEY);
     if (!raw) return DEFAULT_STATE;
     const parsed = JSON.parse(raw) as Partial<PaywallAccessState>;

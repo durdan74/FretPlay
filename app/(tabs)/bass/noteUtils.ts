@@ -2,8 +2,10 @@ import {
   CHROMATIC_SPELLINGS,
   CHROMATIC_SPELLINGS_EN,
   NOTE_TO_PITCH_CLASS,
+  NUMBER_OF_STRINGS,
   OPEN_STRING_NOTES,
   OPEN_STRING_NOTES_EN,
+  getNotesPoolForNotation,
   type NotationSystem,
 } from './constants';
 
@@ -33,6 +35,18 @@ export function getNoteForPosition(stringNumber: number, fret: number, notation:
   if (startIndex === -1) return 'Inconnue';
 
   return chromatic[(startIndex + fret) % 12];
+}
+
+export function getPlayableNotesPool(notation: NotationSystem, maxPlayableFret: number): string[] {
+  const playablePitchClasses = new Set<number>();
+
+  for (let stringNumber = 1; stringNumber <= NUMBER_OF_STRINGS; stringNumber++) {
+    for (let fret = 0; fret <= maxPlayableFret; fret++) {
+      playablePitchClasses.add(getPitchClass(getNoteForPosition(stringNumber, fret, notation)));
+    }
+  }
+
+  return getNotesPoolForNotation(notation).filter((note) => playablePitchClasses.has(getPitchClass(note)));
 }
 
 export function getClosestStringFromX(x: number, stringXs: number[]): number {

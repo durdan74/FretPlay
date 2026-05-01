@@ -40,6 +40,8 @@ type BassNeckProps = {
   neckInteractive?: boolean;
   /** Point vert : position de la note à identifier (« Trouve la case »). */
   answerMarker?: AnswerMarkerPosition | null;
+  /** Case maximale jouable. Les taps sur les cases supérieures sont ignorés. */
+  maxPlayableFret?: number;
 };
 
 export function BassNeck({
@@ -50,6 +52,7 @@ export function BassNeck({
   onSelect,
   neckInteractive = true,
   answerMarker = null,
+  maxPlayableFret = NUMBER_OF_FRETS - 1,
 }: BassNeckProps) {
   const { notation } = useNotation();
   const colorScheme = useColorScheme();
@@ -98,6 +101,7 @@ export function BassNeck({
 
     const fretIndex = Math.floor(y / fretHeight);
     if (fretIndex < 0 || fretIndex >= NUMBER_OF_FRETS) return;
+    if (fretIndex > maxPlayableFret) return;
 
     const stringNumber = getClosestStringFromX(x, stringXs);
     void playFretSound(stringNumber, fretIndex);
@@ -134,6 +138,9 @@ export function BassNeck({
       {Array.from({ length: NUMBER_OF_FRETS }).map((_, fretIndex) => {
         const top = fretIndex * fretHeight;
         const isLightRow = fretIndex === 0;
+        const isOutsidePlayableRange = fretIndex > maxPlayableFret;
+        const baseColor = isLightRow ? '#e7c9a5' : '#d2a679';
+        const stripeCount = Math.max(3, Math.ceil(fretHeight / 12));
 
         return (
           <View
@@ -145,9 +152,26 @@ export function BassNeck({
               right: 0,
               top,
               height: fretHeight,
-              backgroundColor: isLightRow ? '#e7c9a5' : '#d2a679',
+              backgroundColor: isOutsidePlayableRange ? '#ffd6e7' : baseColor,
             }}
-          />
+          >
+            {isOutsidePlayableRange
+              ? Array.from({ length: stripeCount }).map((_, stripeIndex) => (
+                  <View
+                    key={`disabled-fret-stripe-${fretIndex}-${stripeIndex}`}
+                    pointerEvents="none"
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      right: 0,
+                      top: stripeIndex * 12,
+                      height: 3,
+                      backgroundColor: 'rgba(219, 39, 119, 0.28)',
+                    }}
+                  />
+                ))
+              : null}
+          </View>
         );
       })}
 

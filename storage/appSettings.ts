@@ -7,7 +7,9 @@ import { getDefaultUiLanguageFromLocale } from '@/lib/defaultUiLanguage';
 import type { UiLanguage } from '@/lib/i18n/types';
 
 /** Incrémenter si la forme du JSON change (migration). */
-export const APP_SETTINGS_VERSION = 3;
+export const APP_SETTINGS_VERSION = 4;
+export const MIN_PLAYABLE_FRET = 0;
+export const MAX_PLAYABLE_FRET = 12;
 
 /** Dossier documents (inchangé pour conserver paramètres / historique après renommage affiché « FretPlay »). */
 const APP_DIR_NAME = 'notesbasse';
@@ -24,6 +26,8 @@ export type AppSettings = {
   notation: NotationSystem;
   /** Si true, la note à trouver est sur une corde imposée (difficulté). */
   indicateString: boolean;
+  /** Case maximale jouée dans les exercices : 0 = cordes à vide, 12 = tout le manche affiché. */
+  maxPlayableFret: number;
   /** Langue d’interface (indépendante de la notation des notes sur le manche). */
   uiLanguage: UiLanguage;
   /** False tant que l’utilisateur n’a pas terminé l’intro au premier lancement. */
@@ -35,9 +39,17 @@ export function getDefaultAppSettings(): AppSettings {
     settingsVersion: APP_SETTINGS_VERSION,
     notation: getDefaultNotationFromLocale(),
     indicateString: false,
+    maxPlayableFret: MAX_PLAYABLE_FRET,
     uiLanguage: getDefaultUiLanguageFromLocale(),
     onboardingCompleted: false,
   };
+}
+
+export function coercePlayableFret(raw: unknown): number {
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) {
+    return MAX_PLAYABLE_FRET;
+  }
+  return Math.min(MAX_PLAYABLE_FRET, Math.max(MIN_PLAYABLE_FRET, Math.floor(raw)));
 }
 
 function coerceUiLanguage(raw: unknown): UiLanguage | null {
@@ -58,11 +70,12 @@ function parseSettingsJson(raw: string | null): AppSettings | null {
     const settingsVersion = typeof v === 'number' ? v : APP_SETTINGS_VERSION;
     const rawIndicate = (o as { indicateString?: unknown }).indicateString;
     const indicateString = typeof rawIndicate === 'boolean' ? rawIndicate : false;
+    const maxPlayableFret = coercePlayableFret((o as { maxPlayableFret?: unknown }).maxPlayableFret);
     const uiLanguage = coerceUiLanguage((o as { uiLanguage?: unknown }).uiLanguage) ?? getDefaultUiLanguageFromLocale();
     const rawOnboarding = (o as { onboardingCompleted?: unknown }).onboardingCompleted;
     /** Absence de clé : traiter comme intro non terminée. */
     const onboardingCompleted = typeof rawOnboarding === 'boolean' ? rawOnboarding : false;
-    return { settingsVersion, notation, indicateString, uiLanguage, onboardingCompleted };
+    return { settingsVersion, notation, indicateString, maxPlayableFret, uiLanguage, onboardingCompleted };
   } catch {
     return null;
   }
@@ -117,6 +130,7 @@ export async function loadAppSettings(): Promise<AppSettings> {
       settingsVersion: APP_SETTINGS_VERSION,
       notation: legacy,
       indicateString: false,
+      maxPlayableFret: MAX_PLAYABLE_FRET,
       uiLanguage: getDefaultUiLanguageFromLocale(),
       onboardingCompleted: false,
     };

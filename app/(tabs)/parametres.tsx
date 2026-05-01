@@ -1,10 +1,11 @@
 import { router, type Href } from 'expo-router';
 import { Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold, useFonts } from '@expo-google-fonts/manrope';
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
 import { useNotation } from '@/contexts/notation-context';
+import { MAX_PLAYABLE_FRET, MIN_PLAYABLE_FRET } from '@/storage/appSettings';
 
 import { useParametresReturn } from './parametres-return-context';
 
@@ -94,6 +95,25 @@ function CheckRow({
   );
 }
 
+function StepButton({ label, disabled, onPress }: { label: string; disabled: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      style={{
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: disabled ? '#d7e1ec' : '#2F80ED',
+      }}
+    >
+      <Text style={{ color: 'white', fontSize: 24, fontWeight: '800' }}>{label}</Text>
+    </Pressable>
+  );
+}
+
 export default function ParametresScreen() {
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
@@ -101,7 +121,15 @@ export default function ParametresScreen() {
     Manrope_700Bold,
   });
   const { returnTab } = useParametresReturn();
-  const { notation, setNotation, indicateString, setIndicateString, t } = useNotation();
+  const {
+    notation,
+    setNotation,
+    indicateString,
+    setIndicateString,
+    maxPlayableFret,
+    setMaxPlayableFret,
+    t,
+  } = useNotation();
 
   const handleRetour = () => {
     const href: Href =
@@ -114,13 +142,16 @@ export default function ParametresScreen() {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#ffffff',
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
         paddingTop: 56,
         paddingBottom: 24,
         paddingHorizontal: 20,
+      }}
+      style={{
+        flex: 1,
+        backgroundColor: '#ffffff',
       }}
     >
       <Text style={{ fontSize: 30, fontWeight: '700', marginBottom: 18, color: '#1a2432', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
@@ -180,6 +211,47 @@ export default function ParametresScreen() {
           checked={indicateString}
           onToggle={() => setIndicateString(!indicateString)}
         />
+        <View style={{ marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#dce7f4' }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: '#2a3a50', fontFamily: fontsLoaded ? 'Manrope_600SemiBold' : undefined }}>
+            {t('parametresMaxFretTitle')}
+          </Text>
+          <Text style={{ fontSize: 14, color: '#5f6f83', marginTop: 6, marginBottom: 12, lineHeight: 21, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
+            {t('parametresMaxFretBody')}
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+            <StepButton
+              label="-"
+              disabled={maxPlayableFret <= MIN_PLAYABLE_FRET}
+              onPress={() => setMaxPlayableFret(maxPlayableFret - 1)}
+            />
+            <View
+              style={{
+                minWidth: 86,
+                height: 44,
+                borderRadius: 12,
+                backgroundColor: '#ffffff',
+                borderWidth: 1,
+                borderColor: '#dce7f4',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 22, fontWeight: '800', color: '#1a2432', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+                {maxPlayableFret}
+              </Text>
+            </View>
+            <StepButton
+              label="+"
+              disabled={maxPlayableFret >= MAX_PLAYABLE_FRET}
+              onPress={() => setMaxPlayableFret(maxPlayableFret + 1)}
+            />
+          </View>
+          <Text style={{ fontSize: 13, color: '#5f6f83', marginTop: 10, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
+            {maxPlayableFret === 0
+              ? t('parametresMaxFretOpenOnly')
+              : `${t('parametresMaxFretRangePrefix')} ${maxPlayableFret}`}
+          </Text>
+        </View>
       </View>
 
       <Pressable
@@ -196,6 +268,6 @@ export default function ParametresScreen() {
           {t('parametresRetour')}
         </Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 }

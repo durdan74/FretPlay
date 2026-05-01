@@ -6,6 +6,7 @@ import { translate } from '@/lib/i18n/strings';
 import type { UiLanguage } from '@/lib/i18n/types';
 import {
   APP_SETTINGS_VERSION,
+  coercePlayableFret,
   getDefaultAppSettings,
   loadAppSettings,
   saveAppSettings,
@@ -17,8 +18,10 @@ export { getDefaultNotationFromLocale } from '@/lib/defaultNotation';
 type AppSettingsContextValue = {
   notation: NotationSystem;
   indicateString: boolean;
+  maxPlayableFret: number;
   setNotation: (value: NotationSystem) => void;
   setIndicateString: (value: boolean) => void;
+  setMaxPlayableFret: (value: number) => void;
   uiLanguage: UiLanguage;
   setUiLanguage: (value: UiLanguage) => void;
   onboardingCompleted: boolean;
@@ -77,6 +80,18 @@ export function NotationProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setMaxPlayableFret = useCallback((value: number) => {
+    setSettings((prev) => {
+      const next: AppSettings = {
+        ...prev,
+        settingsVersion: APP_SETTINGS_VERSION,
+        maxPlayableFret: coercePlayableFret(value),
+      };
+      void saveAppSettings(next);
+      return next;
+    });
+  }, []);
+
   const setUiLanguage = useCallback((value: UiLanguage) => {
     setSettings((prev) => {
       const next: AppSettings = {
@@ -122,8 +137,10 @@ export function NotationProvider({ children }: { children: ReactNode }) {
     () => ({
       notation: settings.notation,
       indicateString: settings.indicateString,
+      maxPlayableFret: settings.maxPlayableFret,
       setNotation,
       setIndicateString,
+      setMaxPlayableFret,
       uiLanguage: settings.uiLanguage,
       setUiLanguage,
       onboardingCompleted: settings.onboardingCompleted,
@@ -135,10 +152,12 @@ export function NotationProvider({ children }: { children: ReactNode }) {
     [
       settings.notation,
       settings.indicateString,
+      settings.maxPlayableFret,
       settings.uiLanguage,
       settings.onboardingCompleted,
       setNotation,
       setIndicateString,
+      setMaxPlayableFret,
       setUiLanguage,
       completeOnboarding,
       resetOnboardingForDev,

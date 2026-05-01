@@ -5,8 +5,6 @@ import { Modal, Pressable, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
-  getNotesPoolForNotation,
-  NUMBER_OF_FRETS,
   type NotationSystem,
 } from '@/app/(tabs)/bass/constants';
 import { StatBlock } from '@/components/game/StatBlock';
@@ -19,25 +17,27 @@ import { appendGameSession } from '@/storage/gameHistory';
 import { FREE_PLAY_LIMIT, getPaywallAccessState, incrementFreeSessionUsed } from '@/storage/paywallAccess';
 
 import { BassNeck } from './bass/BassNeck';
-import { getNoteForPosition, getOpenStringLabel, samePitch } from './bass/noteUtils';
+import { getNoteForPosition, getOpenStringLabel, getPlayableNotesPool, samePitch } from './bass/noteUtils';
 
 const TOTAL_ATTEMPTS = 10;
 
 function getRandomNote(pool: string[], excluding?: string): string {
   const filtered =
     excluding !== undefined ? pool.filter((note) => !samePitch(note, excluding)) : pool;
-  const randomIndex = Math.floor(Math.random() * filtered.length);
-  return filtered[randomIndex];
+  const candidates = filtered.length > 0 ? filtered : pool;
+  const randomIndex = Math.floor(Math.random() * candidates.length);
+  return candidates[randomIndex];
 }
 
 function pickRandomStringTarget(
   notation: NotationSystem,
+  maxPlayableFret: number,
   exclude?: { note: string; stringNum: number },
 ): { note: string; stringNum: number } {
   const strings = [1, 2, 3, 4] as const;
   for (let attempt = 0; attempt < 120; attempt++) {
     const stringNum = strings[Math.floor(Math.random() * 4)]!;
-    const fret = Math.floor(Math.random() * NUMBER_OF_FRETS);
+    const fret = Math.floor(Math.random() * (maxPlayableFret + 1));
     const note = getNoteForPosition(stringNum, fret, notation);
     if (exclude && samePitch(note, exclude.note) && stringNum === exclude.stringNum) {
       continue;
@@ -48,13 +48,13 @@ function pickRandomStringTarget(
 }
 
 export default function Jeu1Screen() {
-  const { notation, isHydrated, indicateString, t, uiLanguage } = useNotation();
+  const { notation, isHydrated, indicateString, maxPlayableFret, t, uiLanguage } = useNotation();
   const { isEntitled } = usePurchases();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const theme = useMemo(() => getGameScreenTheme(isDark), [isDark]);
-  const notesPool = useMemo(() => getNotesPoolForNotation(notation), [notation]);
+  const notesPool = useMemo(() => getPlayableNotesPool(notation, maxPlayableFret), [notation, maxPlayableFret]);
 
   const [selectedString, setSelectedString] = useState<number | null>(null);
   const [selectedFret, setSelectedFret] = useState<number | null>(null);
@@ -71,6 +71,7 @@ export default function Jeu1Screen() {
   const wasHydratedRef = useRef(false);
   const lastNotationRef = useRef(notation);
   const lastIndicateStringRef = useRef(indicateString);
+  const lastMaxPlayableFretRef = useRef(maxPlayableFret);
   /** Horodatage du 1er essai de la partie en cours (pour `durationMs`). */
   const gameStartedAtRef = useRef<number | null>(null);
 
@@ -91,7 +92,7 @@ export default function Jeu1Screen() {
     setMissedCount(0);
     setAttemptCount(0);
     if (indicateString) {
-      const nextTarget = pickRandomStringTarget(notation);
+      const nextTarget = pickRandomStringTarget(notation, maxPlayableFret);
       setTargetNote(nextTarget.note);
       setTargetStringNum(nextTarget.stringNum);
     } else {
@@ -105,7 +106,7 @@ export default function Jeu1Screen() {
       clearTimeout(emojiTimeoutRef.current);
       emojiTimeoutRef.current = null;
     }
-  }, [notesPool, indicateString, notation]);
+  }, [notesPool, indicateString, notation, maxPlayableFret]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -115,6 +116,7 @@ export default function Jeu1Screen() {
       resetGame();
       lastNotationRef.current = notation;
       lastIndicateStringRef.current = indicateString;
+      lastMaxPlayableFretRef.current = maxPlayableFret;
       return;
     }
 
@@ -126,7 +128,11 @@ export default function Jeu1Screen() {
       resetGame();
       lastIndicateStringRef.current = indicateString;
     }
-  }, [isHydrated, notation, indicateString, resetGame]);
+    if (lastMaxPlayableFretRef.current !== maxPlayableFret) {
+      resetGame();
+      lastMaxPlayableFretRef.current = maxPlayableFret;
+    }
+  }, [isHydrated, notation, indicateString, maxPlayableFret, resetGame]);
 
   useEffect(() => {
     let cancelled = false;
@@ -185,7 +191,7 @@ export default function Jeu1Screen() {
     if (isCorrect) {
       setFoundCount((prev) => prev + 1);
       if (indicateString && targetStringNum !== null) {
-        const nextTarget = pickRandomStringTarget(notation, { note: targetNote, stringNum: targetStringNum });
+        const nextTarget = pickRandomStringTarget(notation, maxPlayableFret, { note: targetNote, stringNum: targetStringNum });
         setTargetNote(nextTarget.note);
         setTargetStringNum(nextTarget.stringNum);
       } else {
@@ -246,6 +252,7 @@ export default function Jeu1Screen() {
           selectedResult={selectedResult}
           wrongPlayedNote={wrongPlayedNote}
           onSelect={handleSelect}
+          maxPlayableFret={maxPlayableFret}
         />
 
         <View

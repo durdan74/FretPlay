@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Modal, Pressable, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getNotesPoolForNotation, NUMBER_OF_FRETS, type NotationSystem } from '@/app/(tabs)/bass/constants';
+import { getNotesPoolForNotation, type NotationSystem } from '@/app/(tabs)/bass/constants';
 import { StatBlock } from '@/components/game/StatBlock';
 import { GAME_ACCENT, GAME_FOUND, GAME_MISSED, getGameScreenTheme } from '@/constants/gameScreen';
 import { useNotation } from '@/contexts/notation-context';
@@ -44,10 +44,10 @@ function buildFiveChoices(answerNote: string, pool: string[]): string[] {
   return shuffle(labels);
 }
 
-function pickRandomPosition(): { stringNum: number; fret: number } {
+function pickRandomPosition(maxPlayableFret: number): { stringNum: number; fret: number } {
   const strings = [1, 2, 3, 4] as const;
   const stringNum = strings[Math.floor(Math.random() * 4)]!;
-  const fret = Math.floor(Math.random() * NUMBER_OF_FRETS);
+  const fret = Math.floor(Math.random() * (maxPlayableFret + 1));
   return { stringNum, fret };
 }
 
@@ -57,22 +57,24 @@ type RoundState = {
   choices: string[];
 };
 
-function createRound(notationArg: NotationSystem): RoundState {
-  const markerPos = pickRandomPosition();
+function createRound(notationArg: NotationSystem, maxPlayableFret: number): RoundState {
+  const markerPos = pickRandomPosition(maxPlayableFret);
   const answerNote = getNoteForPosition(markerPos.stringNum, markerPos.fret, notationArg);
   const choices = buildFiveChoices(answerNote, getNotesPoolForNotation(notationArg));
   return { markerPos, answerNote, choices };
 }
 
 export default function Jeu2Screen() {
-  const { notation, isHydrated, t, uiLanguage } = useNotation();
+  const { notation, isHydrated, maxPlayableFret, t, uiLanguage } = useNotation();
   const { isEntitled } = usePurchases();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const theme = useMemo(() => getGameScreenTheme(isDark), [isDark]);
 
-  const [round, setRound] = useState<RoundState>(() => createRound(getDefaultAppSettings().notation));
+  const [round, setRound] = useState<RoundState>(() =>
+    createRound(getDefaultAppSettings().notation, getDefaultAppSettings().maxPlayableFret),
+  );
   const [pickedNote, setPickedNote] = useState<string | null>(null);
   const [revealedWrong, setRevealedWrong] = useState(false);
   const [foundCount, setFoundCount] = useState(0);
@@ -83,9 +85,10 @@ export default function Jeu2Screen() {
   const gameStartedAtRef = useRef<number | null>(null);
   const wasHydratedRef = useRef(false);
   const lastNotationRef = useRef(notation);
+  const lastMaxPlayableFretRef = useRef(maxPlayableFret);
 
-  const startNewRound = useCallback((notationArg: NotationSystem) => {
-    setRound(createRound(notationArg));
+  const startNewRound = useCallback((notationArg: NotationSystem, maxFret: number) => {
+    setRound(createRound(notationArg, maxFret));
     setPickedNote(null);
     setRevealedWrong(false);
   }, []);
@@ -96,24 +99,26 @@ export default function Jeu2Screen() {
     setAttemptCount(0);
     setEndDialogDismissed(false);
     gameStartedAtRef.current = null;
-    startNewRound(notation);
-  }, [notation, startNewRound]);
+    startNewRound(notation, maxPlayableFret);
+  }, [notation, maxPlayableFret, startNewRound]);
 
   useEffect(() => {
     if (!isHydrated) return;
 
     if (!wasHydratedRef.current) {
       wasHydratedRef.current = true;
-      startNewRound(notation);
+      startNewRound(notation, maxPlayableFret);
       lastNotationRef.current = notation;
+      lastMaxPlayableFretRef.current = maxPlayableFret;
       return;
     }
 
-    if (lastNotationRef.current !== notation) {
+    if (lastNotationRef.current !== notation || lastMaxPlayableFretRef.current !== maxPlayableFret) {
       lastNotationRef.current = notation;
+      lastMaxPlayableFretRef.current = maxPlayableFret;
       resetFullGame();
     }
-  }, [isHydrated, notation, resetFullGame, startNewRound]);
+  }, [isHydrated, notation, maxPlayableFret, resetFullGame, startNewRound]);
 
   useEffect(() => {
     let cancelled = false;
@@ -181,7 +186,7 @@ export default function Jeu2Screen() {
       return;
     }
 
-    startNewRound(notation);
+    startNewRound(notation, maxPlayableFret);
   };
 
   const isGameFinished = attemptCount >= TOTAL_ATTEMPTS;
@@ -211,6 +216,7 @@ export default function Jeu2Screen() {
           wrongPlayedNote={null}
           onSelect={() => {}}
           neckInteractive={false}
+          maxPlayableFret={maxPlayableFret}
           answerMarker={
             isGameFinished ? null : { stringNum: round.markerPos.stringNum, fret: round.markerPos.fret }
           }

@@ -36,6 +36,10 @@ const en = {
   parametresDifficultyBody:
     'When enabled, the note must be played on the indicated string: the same pitch on another string counts as wrong.',
   parametresIndicateString: 'Show string',
+  parametresMaxFretTitle: 'Playable frets',
+  parametresMaxFretBody: 'Limit exercises to frets 0 to 12. Taps above this value are ignored.',
+  parametresMaxFretOpenOnly: 'Only open strings are used.',
+  parametresMaxFretRangePrefix: 'Frets used: 0 to',
   parametresRetour: 'Back',
   parametresLanguageTitle: 'Interface language',
   languagePickTitle: 'Choose language',
@@ -144,6 +148,10 @@ const fr: Record<TranslationKey, string> = {
   parametresDifficultyBody:
     'Si activé, la note doit être jouée sur la corde indiquée : la même hauteur sur une autre corde est considérée comme une erreur.',
   parametresIndicateString: 'Indiquer la corde',
+  parametresMaxFretTitle: 'Frettes jouées',
+  parametresMaxFretBody: 'Limite les exercices aux cases 0 à 12. Les taps au-dessus de cette valeur sont ignorés.',
+  parametresMaxFretOpenOnly: 'Seules les cordes à vide sont utilisées.',
+  parametresMaxFretRangePrefix: 'Cases utilisées : 0 à',
   parametresRetour: 'Retour',
   parametresLanguageTitle: 'Langue de l’interface',
   languagePickTitle: 'Choisir la langue',
