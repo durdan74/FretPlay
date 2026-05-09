@@ -1,11 +1,13 @@
 import { router, type Href } from 'expo-router';
 import { Manrope_400Regular, Manrope_600SemiBold, Manrope_700Bold, useFonts } from '@expo-google-fonts/manrope';
 import React from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
 import { useNotation } from '@/contexts/notation-context';
+import { usePurchases } from '@/contexts/purchases-context';
 import { MAX_PLAYABLE_FRET, MIN_PLAYABLE_FRET } from '@/storage/appSettings';
+import { resetPaywallAccess } from '@/storage/paywallAccess';
 
 import { useParametresReturn } from './parametres-return-context';
 
@@ -128,8 +130,10 @@ export default function ParametresScreen() {
     setIndicateString,
     maxPlayableFret,
     setMaxPlayableFret,
+    resetOnboardingForDev,
     t,
   } = useNotation();
+  const { logOutPurchases } = usePurchases();
 
   const handleRetour = () => {
     const href: Href =
@@ -139,6 +143,31 @@ export default function ParametresScreen() {
 
   const setSystem = (value: NotationSystem) => {
     setNotation(value);
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Déconnexion',
+      'En vous déconnectant, vous repasserez par l’onboarding et un bouton "Restaurer les achats" apparaîtra pour vous reconnecter.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Se déconnecter',
+          style: 'destructive',
+          onPress: () => {
+            void (async () => {
+              try {
+                await resetPaywallAccess();
+                await logOutPurchases();
+              } finally {
+                resetOnboardingForDev();
+                router.replace('/landing');
+              }
+            })();
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -266,6 +295,25 @@ export default function ParametresScreen() {
       >
         <Text style={{ color: 'white', fontSize: 17, fontWeight: '700', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
           {t('parametresRetour')}
+        </Text>
+      </Pressable>
+
+      <Pressable
+        onPress={handleLogout}
+        style={{
+          alignSelf: 'stretch',
+          marginTop: 18,
+          paddingVertical: 13,
+          paddingHorizontal: 20,
+          borderRadius: 14,
+          borderWidth: 1,
+          borderColor: '#fecaca',
+          backgroundColor: '#fff5f5',
+          alignItems: 'center',
+        }}
+      >
+        <Text style={{ color: '#b91c1c', fontSize: 16, fontWeight: '700', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+          Se déconnecter
         </Text>
       </Pressable>
     </ScrollView>

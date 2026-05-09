@@ -55,6 +55,8 @@ export async function markLocallyUnlocked(): Promise<void> {
   });
 }
 
-export async function resetPaywallAccessForDev(): Promise<void> {
+export async function resetPaywallAccess(): Promise<void> {
   await saveState(DEFAULT_STATE);
 }
+
+export const resetPaywallAccessForDev = resetPaywallAccess;

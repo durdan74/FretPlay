@@ -18,6 +18,7 @@ export default function RootLayout() {
           <OnboardingFlowProvider>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
+              <Stack.Screen name="landing" />
               <Stack.Screen
                 name="onboarding"
                 options={{

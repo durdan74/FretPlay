@@ -145,8 +145,8 @@ export default function OnboardingSocialProofScreen() {
 
             <Text
               style={{
-                fontSize: 31,
-                lineHeight: 38,
+                fontSize: 29,
+                lineHeight: 35,
                 color: '#161e29',
                 fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
               }}
@@ -180,7 +180,7 @@ export default function OnboardingSocialProofScreen() {
           </ScrollView>
         </View>
 
-        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: insets.bottom + 20 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 10 }}>
           <AnimatedNextButton onPress={() => router.push('/onboarding/loading-plan')} title="Continuer" />
         </View>
       </OnboardingContainer>

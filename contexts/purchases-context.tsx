@@ -21,6 +21,7 @@ type PurchasesContextValue = {
   refreshCustomerInfo: () => Promise<void>;
   restorePurchases: () => Promise<CustomerInfo>;
   purchasePackage: (pkg: PurchasesPackage) => Promise<CustomerInfo>;
+  logOutPurchases: () => Promise<void>;
 };
 
 const PurchasesContext = createContext<PurchasesContextValue | null>(null);
@@ -107,6 +108,15 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
     return info;
   }, []);
 
+  const logOutPurchases = useCallback(async () => {
+    if (!isNativeStore || !ensureRevenueCatConfigured()) {
+      setCustomerInfo(null);
+      return;
+    }
+    const info = await Purchases.logOut();
+    setCustomerInfo(info);
+  }, []);
+
   const isEntitled = useMemo(() => {
     if (!customerInfo) {
       return false;
@@ -123,6 +133,7 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
       refreshCustomerInfo,
       restorePurchases,
       purchasePackage,
+      logOutPurchases,
     }),
     [
       isConfigured,
@@ -132,6 +143,7 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
       refreshCustomerInfo,
       restorePurchases,
       purchasePackage,
+      logOutPurchases,
     ],
   );
 

@@ -121,8 +121,8 @@ export default function OnboardingLoadingPlanScreen() {
               </Text>
               <Text
                 style={{
-                  fontSize: 30,
-                  lineHeight: 36,
+                  fontSize: 28,
+                  lineHeight: 34,
                   color: '#1b2636',
                   textAlign: 'center',
                   fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,

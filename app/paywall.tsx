@@ -13,8 +13,20 @@ import { markLocallyUnlocked } from '@/storage/paywallAccess';
 
 type PlanType = 'annual' | 'monthly';
 
-function formatEuro(amount: number): string {
-  return `${amount.toFixed(2).replace('.', ',')} €`;
+function formatLocalizedPrice(amount: number, pkg: PurchasesPackage): string {
+  const currencyCode = (pkg.product as { currencyCode?: string }).currencyCode;
+  if (!currencyCode) {
+    return pkg.product.priceString;
+  }
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount);
+  } catch {
+    return pkg.product.priceString;
+  }
 }
 
 export default function PaywallScreen() {
@@ -311,12 +323,12 @@ export default function PaywallScreen() {
                       Annuel
                     </Text>
                     <Text style={{ color: '#5f6f83', fontSize: 13, lineHeight: 17, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
-                      {annualPackage ? formatEuro(annualPackage.product.price / 52) : '0,87 €'} / semaine
+                      {annualPackage ? formatLocalizedPrice(annualPackage.product.price / 52, annualPackage) : 'Prix chargé par l’App Store'} / semaine
                     </Text>
                   </View>
                 </View>
                 <Text style={{ color: '#1c2430', fontSize: 16, lineHeight: 21, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
-                  {annualPackage ? `${annualPackage.product.priceString} / an` : '44,99 € / an'}
+                  {annualPackage ? `${annualPackage.product.priceString} / an` : 'Prix indisponible'}
                 </Text>
               </View>
             </Pressable>
@@ -353,7 +365,7 @@ export default function PaywallScreen() {
                   </Text>
                 </View>
                 <Text style={{ color: '#1c2430', fontSize: 16, lineHeight: 21, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
-                  {monthlyPackage ? `${monthlyPackage.product.priceString} / mois` : '6,99 € / mois'}
+                  {monthlyPackage ? `${monthlyPackage.product.priceString} / mois` : 'Prix indisponible'}
                 </Text>
               </View>
             </Pressable>
@@ -404,7 +416,7 @@ export default function PaywallScreen() {
           }}
         >
           {selectedPlan === 'annual' && annualPackage
-            ? `${annualPackage.product.priceString} / an (${formatEuro(annualPackage.product.price / 12)} / mois)`
+            ? `${annualPackage.product.priceString} / an (${formatLocalizedPrice(annualPackage.product.price / 12, annualPackage)} / mois)`
             : selectedPlan === 'monthly' && monthlyPackage
               ? `${monthlyPackage.product.priceString} / mois`
               : 'Tarifs affichés dans la boutique au moment du paiement.'}

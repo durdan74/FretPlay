@@ -2,7 +2,7 @@ import { Manrope_400Regular, Manrope_700Bold, useFonts } from '@expo-google-font
 import { router } from 'expo-router';
 import React from 'react';
 import { Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedNextButton } from '@/components/onboarding/AnimatedNextButton';
 import { OnboardingContainer } from '@/components/onboarding/OnboardingContainer';
@@ -18,7 +18,6 @@ function resultDelay(segment: string | null): string {
 }
 
 export default function OnboardingPlanSummaryScreen() {
-  const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
     Manrope_700Bold,
@@ -37,7 +36,7 @@ export default function OnboardingPlanSummaryScreen() {
         <View style={{ flex: 1, paddingTop: 20, paddingHorizontal: 20 }}>
           <OnboardingHeader progress={getOnboardingProgress('plan_summary')} onBack={() => router.back()} />
 
-          <Text style={{ fontSize: 33, lineHeight: 40, color: '#161e29', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+          <Text style={{ fontSize: 30, lineHeight: 37, color: '#161e29', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
             Ton plan est prêt.
           </Text>
           <Text
@@ -82,7 +81,7 @@ export default function OnboardingPlanSummaryScreen() {
           </Text>
         </View>
 
-        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: insets.bottom + 20 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 10 }}>
           <AnimatedNextButton
             onPress={() => {
               completeOnboarding?.();

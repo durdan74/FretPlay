@@ -24,15 +24,6 @@ function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-function formatShortDate(iso: string): string {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
-  } catch {
-    return '';
-  }
-}
-
 function computeStreak(sessions: GameSessionRecord[]): number {
   if (sessions.length === 0) return 0;
   const daysWithSession = new Set(
@@ -156,10 +147,6 @@ export default function Index() {
   const weekStart = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const weeklySessions = history.filter((s) => new Date(s.playedAt).getTime() >= weekStart).length;
   const streak = computeStreak(history);
-  const lastSession = history[0];
-  const lastScorePct = lastSession ? Math.round((lastSession.found / Math.max(lastSession.attempts, 1)) * 100) : null;
-  const continueRoute = lastSession?.gameKind === 'jeu-2' ? '/(tabs)/jeu-2' : '/(tabs)/jeu-1';
-  const continueLabel = lastSession?.gameKind === 'jeu-2' ? t('gameNameFindCase') : t('gameNameNeck');
 
   return (
     <View style={{ flex: 1, backgroundColor: pageBg }}>
@@ -174,8 +161,8 @@ export default function Index() {
       >
         <View
           style={{
-            marginBottom: 32,
-            paddingBottom: 24,
+            marginBottom: 20,
+            paddingBottom: 18,
             borderBottomWidth: 1,
             borderBottomColor: isDark ? 'rgba(255,255,255,0.07)' : '#e4edf8',
           }}
@@ -206,127 +193,58 @@ export default function Index() {
           </Text>
         </View>
 
-        <View
-          style={{
-            marginBottom: 18,
-            borderRadius: 22,
-            borderWidth: 1,
-            borderColor: '#dce7f4',
-            backgroundColor: '#f6faff',
-            padding: 16,
-          }}
-        >
-          <Text
-            style={{
-              color: '#1d3f70',
-              fontSize: 12,
-              textTransform: 'uppercase',
-              letterSpacing: 1.1,
-              fontFamily: fontsLoaded ? 'Manrope_600SemiBold' : undefined,
-            }}
-          >
-            Reprise rapide
-          </Text>
-          <Text
-            style={{
-              marginTop: 6,
-              color: '#1c2430',
-              fontSize: 20,
-              lineHeight: 26,
-              fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
-            }}
-          >
-            {lastSession ? `Continue sur ${continueLabel}` : 'Lance ta première session'}
-          </Text>
-          <Text
-            style={{
-              marginTop: 6,
-              color: '#5f6f83',
-              fontSize: 14,
-              lineHeight: 20,
-              fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined,
-            }}
-          >
-            {lastSession
-              ? `Dernière partie le ${formatShortDate(lastSession.playedAt)} · ${lastScorePct}% de réussite`
-              : 'Commence aujourd’hui pour construire ta régularité.'}
-          </Text>
-          <Pressable
-            onPress={() => router.push(continueRoute)}
-            style={({ pressed }) => ({
-              marginTop: 12,
-              height: 48,
-              borderRadius: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#2F80ED',
-              opacity: pressed ? 0.9 : 1,
-            })}
-          >
-            <Text
-              style={{
-                color: '#fff',
-                fontSize: 15,
-                fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
-              }}
-            >
-              {lastSession ? 'Reprendre' : 'Commencer'}
-            </Text>
-          </Pressable>
-        </View>
-
-        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 24 }}>
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 18 }}>
           <View
             style={{
               flex: 1,
-              borderRadius: 16,
+              borderRadius: 12,
               borderWidth: 1,
               borderColor: '#dce7f4',
               backgroundColor: '#ffffff',
-              paddingVertical: 12,
-              paddingHorizontal: 12,
+              paddingVertical: 8,
+              paddingHorizontal: 9,
             }}
           >
-            <Text style={{ color: '#5f6f83', fontSize: 12, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: '#5f6f83', fontSize: 10, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
               Série
             </Text>
-            <Text style={{ marginTop: 4, color: '#1c2430', fontSize: 24, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+            <Text style={{ marginTop: 2, color: '#1c2430', fontSize: 19, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
               {streak} j
             </Text>
           </View>
           <View
             style={{
               flex: 1,
-              borderRadius: 16,
+              borderRadius: 12,
               borderWidth: 1,
               borderColor: '#dce7f4',
               backgroundColor: '#ffffff',
-              paddingVertical: 12,
-              paddingHorizontal: 12,
+              paddingVertical: 8,
+              paddingHorizontal: 9,
             }}
           >
-            <Text style={{ color: '#5f6f83', fontSize: 12, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: '#5f6f83', fontSize: 10, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
               7 derniers jours
             </Text>
-            <Text style={{ marginTop: 4, color: '#1c2430', fontSize: 24, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+            <Text style={{ marginTop: 2, color: '#1c2430', fontSize: 19, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
               {weeklySessions}
             </Text>
           </View>
           <View
             style={{
               flex: 1,
-              borderRadius: 16,
+              borderRadius: 12,
               borderWidth: 1,
               borderColor: '#dce7f4',
               backgroundColor: '#ffffff',
-              paddingVertical: 12,
-              paddingHorizontal: 12,
+              paddingVertical: 8,
+              paddingHorizontal: 9,
             }}
           >
-            <Text style={{ color: '#5f6f83', fontSize: 12, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: '#5f6f83', fontSize: 10, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
               Total
             </Text>
-            <Text style={{ marginTop: 4, color: '#1c2430', fontSize: 24, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
+            <Text style={{ marginTop: 2, color: '#1c2430', fontSize: 19, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
               {totalSessions}
             </Text>
           </View>
@@ -368,7 +286,7 @@ export default function Index() {
         <Pressable
           onPress={() => {
             resetOnboardingForDev();
-            router.replace('/onboarding');
+            router.replace('/landing');
           }}
           style={({ pressed }) => ({
             marginTop: 28,

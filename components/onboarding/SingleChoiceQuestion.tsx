@@ -48,10 +48,10 @@ export function SingleChoiceQuestion({
           <OnboardingHeader progress={progress} onBack={onBack} />
           <Text
             style={{
-              fontSize: 33,
+              fontSize: 30,
               fontWeight: '500',
               color: uiPalette.title,
-              lineHeight: 40,
+              lineHeight: 37,
               fontFamily: fontsLoaded ? 'Manrope_700Bold' : titleFontFamily,
             }}
           >

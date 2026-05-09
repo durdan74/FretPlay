@@ -1,7 +1,9 @@
 import { Manrope_400Regular, Manrope_700Bold, useFonts } from '@expo-google-fonts/manrope';
+import { Image } from 'expo-image';
 import React from 'react';
+import type { ImageSourcePropType } from 'react-native';
 import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ONBOARDING_COLORS } from './theme';
 import { AnimatedNextButton } from './AnimatedNextButton';
@@ -16,6 +18,8 @@ export function OnboardingMessageScreen({
   onNext,
   nextLabel = 'Continuer',
   disableBack = false,
+  imageSource,
+  imageAspectRatio = 1,
 }: {
   progress: number;
   title: string;
@@ -24,8 +28,9 @@ export function OnboardingMessageScreen({
   onNext: () => void;
   nextLabel?: string;
   disableBack?: boolean;
+  imageSource?: ImageSourcePropType;
+  imageAspectRatio?: number;
 }) {
-  const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
     Manrope_700Bold,
@@ -45,10 +50,10 @@ export function OnboardingMessageScreen({
         >
           <Text
             style={{
-              fontSize: 33,
+              fontSize: 30,
               fontWeight: '500',
               color: ONBOARDING_COLORS.title,
-              lineHeight: 40,
+              lineHeight: 37,
               fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
             }}
           >
@@ -58,26 +63,37 @@ export function OnboardingMessageScreen({
             style={{
               marginTop: 24,
               borderRadius: 24,
-              borderWidth: 1,
-              borderColor: '#d8e4f2',
-              backgroundColor: '#eff5ff',
-              height: 240,
+              borderWidth: imageSource ? 0 : 1,
+              borderColor: imageSource ? 'transparent' : '#d8e4f2',
+              backgroundColor: imageSource ? 'transparent' : '#eff5ff',
+              width: '100%',
+              height: imageSource ? undefined : 240,
+              aspectRatio: imageSource ? imageAspectRatio : undefined,
               alignItems: 'center',
               justifyContent: 'center',
-              paddingHorizontal: 16,
+              overflow: 'hidden',
+              paddingHorizontal: imageSource ? 0 : 16,
             }}
           >
-            <Text
-              style={{
-                textAlign: 'center',
-                color: '#7a8fae',
-                fontSize: 14,
-                lineHeight: 21,
-                fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined,
-              }}
-            >
-              Zone graphique placeholder (tu peux insérer ton visuel ici)
-            </Text>
+            {imageSource ? (
+              <Image
+                source={imageSource}
+                contentFit="cover"
+                style={{ width: '100%', height: '100%' }}
+              />
+            ) : (
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: '#7a8fae',
+                  fontSize: 14,
+                  lineHeight: 21,
+                  fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined,
+                }}
+              >
+                Zone graphique placeholder (tu peux insérer ton visuel ici)
+              </Text>
+            )}
           </View>
 
           <Text
@@ -94,7 +110,7 @@ export function OnboardingMessageScreen({
           </Text>
         </ScrollView>
 
-        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: insets.bottom + 20 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 10 }}>
           <AnimatedNextButton onPress={onNext} title={nextLabel} />
         </View>
       </OnboardingContainer>

@@ -48,10 +48,10 @@ export function MultiChoiceQuestion({
           <OnboardingHeader progress={progress} onBack={onBack} />
           <Text
             style={{
-              fontSize: 33,
+              fontSize: 30,
               fontWeight: '500',
               color: uiPalette.title,
-              lineHeight: 40,
+              lineHeight: 37,
               fontFamily: fontsLoaded ? 'Manrope_700Bold' : titleFontFamily,
             }}
           >
@@ -103,7 +103,7 @@ export function MultiChoiceQuestion({
           ))}
         </ScrollView>
 
-        <View style={{ paddingHorizontal: 20, paddingBottom: 20, paddingTop: 6 }}>
+        <View style={{ paddingHorizontal: 20, paddingBottom: 10, paddingTop: 6 }}>
           <PrimaryButton
             title="Continuer"
             disabled={selectedSet.size === 0}
