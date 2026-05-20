@@ -9,6 +9,9 @@ export default function OnboardingSegProScreen() {
       progress={getOnboardingProgress('seg_pro')}
       title="Tu combleras tes lacunes en moins de 45 jours."
       description="Fretplay est parfait pour revisiter tes fondamentaux, combler les petits manques et garder une pratique régulière."
+      imageSource={require('@/assets/images/super-francais.png')}
+      imageHeight={240}
+      imageContentFit="contain"
       onBack={() => router.back()}
       onNext={() => router.push('/onboarding/q-blocker')}
     />

@@ -20,6 +20,8 @@ export function OnboardingMessageScreen({
   disableBack = false,
   imageSource,
   imageAspectRatio = 1,
+  imageHeight,
+  imageContentFit = 'cover',
 }: {
   progress: number;
   title: string;
@@ -30,6 +32,8 @@ export function OnboardingMessageScreen({
   disableBack?: boolean;
   imageSource?: ImageSourcePropType;
   imageAspectRatio?: number;
+  imageHeight?: number;
+  imageContentFit?: 'cover' | 'contain';
 }) {
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
@@ -67,8 +71,8 @@ export function OnboardingMessageScreen({
               borderColor: imageSource ? 'transparent' : '#d8e4f2',
               backgroundColor: imageSource ? 'transparent' : '#eff5ff',
               width: '100%',
-              height: imageSource ? undefined : 240,
-              aspectRatio: imageSource ? imageAspectRatio : undefined,
+              height: imageSource ? imageHeight : 240,
+              aspectRatio: imageSource && !imageHeight ? imageAspectRatio : undefined,
               alignItems: 'center',
               justifyContent: 'center',
               overflow: 'hidden',
@@ -78,7 +82,7 @@ export function OnboardingMessageScreen({
             {imageSource ? (
               <Image
                 source={imageSource}
-                contentFit="cover"
+                contentFit={imageContentFit}
                 style={{ width: '100%', height: '100%' }}
               />
             ) : (

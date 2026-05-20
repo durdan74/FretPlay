@@ -9,6 +9,9 @@ export default function OnboardingSegBeginnerScreen() {
       progress={getOnboardingProgress('seg_beginner')}
       title="Super ! Tu verras des progrès rapidement."
       description="Fretplay est pensé pour les débutants — tu vas poser des bases solides dès le départ, sans prendre de mauvaises habitudes."
+      imageSource={require('@/assets/images/super-francais.png')}
+      imageHeight={240}
+      imageContentFit="contain"
       onBack={() => router.back()}
       onNext={() => router.push('/onboarding/q-blocker')}
     />

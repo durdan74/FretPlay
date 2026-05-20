@@ -1,5 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import { Image } from 'expo-image';
 import React from 'react';
 import { Animated, Dimensions, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,18 +15,21 @@ const LANDING_SLIDES = [
     title: 'Maîtrise le manche plus vite',
     description: 'Des exercices courts pour ancre r les notes et jouer avec plus de confiance.',
     icon: '🎸',
+    imageSource: require('@/assets/images/basse-francais.png'),
   },
   {
     id: 'landing-2',
     title: 'Mesure tes vrais progrès',
     description: 'Suis ta régularité et améliore ton taux de réussite à chaque session.',
     icon: '📈',
+    imageSource: require('@/assets/images/mesure-progres-francais.png'),
   },
   {
     id: 'landing-3',
     title: 'des mini-jeux ultra efficaces',
     description: 'Travaille à la fois le repérage visuel et la mémoire musculaire du manche.',
     icon: '🎯',
+    imageSource: require('@/assets/images/mini-jeux-francais.png'),
   },
 ] as const;
 
@@ -112,10 +116,21 @@ export default function LandingScreen() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         marginBottom: 14,
+                        overflow: 'hidden',
                       }}
                     >
-                      <Text style={{ fontSize: 48 }}>{slide.icon}</Text>
-                      <Text style={{ color: '#6b7f99', marginTop: 8, fontSize: 13 }}>Photo placeholder</Text>
+                      {slide.imageSource ? (
+                        <Image
+                          source={slide.imageSource}
+                          contentFit="cover"
+                          style={{ width: '100%', height: '100%' }}
+                        />
+                      ) : (
+                        <>
+                          <Text style={{ fontSize: 48 }}>{slide.icon}</Text>
+                          <Text style={{ color: '#6b7f99', marginTop: 8, fontSize: 13 }}>Photo placeholder</Text>
+                        </>
+                      )}
                     </View>
                     <Text style={{ fontSize: 27, lineHeight: 33, color: '#1c2430', fontWeight: '700' }}>
                       {slide.title}

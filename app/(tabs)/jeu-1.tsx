@@ -5,7 +5,7 @@ import { Modal, Pressable, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
-  type NotationSystem,
+    type NotationSystem,
 } from '@/app/(tabs)/bass/constants';
 import { StatBlock } from '@/components/game/StatBlock';
 import { GAME_ACCENT, GAME_FOUND, GAME_MISSED, getGameScreenTheme } from '@/constants/gameScreen';

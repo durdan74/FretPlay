@@ -10,7 +10,7 @@ export default function OnboardingIntroSolutionScreen() {
       title="FretPlay, c'est quelques minutes. Pas plus."
       description="Des mini-jeux pensés pour ancrer les notes du manche dans ta mémoire, avec un feedback immédiat à chaque réponse. Les notes deviennent naturelles et tu progresseras vite."
       imageSource={require('@/assets/images/avantages-desavantages-francais.png')}
-      imageAspectRatio={1344 / 1208}
+      imageAspectRatio={1360 / 1263}
       onBack={() => router.back()}
       onNext={() => router.push('/onboarding/q-experience')}
     />

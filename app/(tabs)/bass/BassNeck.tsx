@@ -4,13 +4,13 @@ import { LayoutChangeEvent, Pressable, ScrollView, Text, useColorScheme, View } 
 import { useNotation } from '@/contexts/notation-context';
 
 import {
-  FRET_NUMBER_COLUMN_WIDTH,
-  NUMBER_OF_FRETS,
-  NUMBER_OF_STRINGS,
-  OPEN_STRING_NOTES,
-  OPEN_STRING_NOTES_EN,
-  SIDE_INSET,
-  STRING_WIDTHS,
+    FRET_NUMBER_COLUMN_WIDTH,
+    NUMBER_OF_FRETS,
+    NUMBER_OF_STRINGS,
+    OPEN_STRING_NOTES,
+    OPEN_STRING_NOTES_EN,
+    SIDE_INSET,
+    STRING_WIDTHS,
 } from './constants';
 import { getClosestStringFromX } from './noteUtils';
 import { playFretSound } from './playFretSound';

@@ -181,7 +181,7 @@ export default function OnboardingSocialProofScreen() {
         </View>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 10 }}>
-          <AnimatedNextButton onPress={() => router.push('/onboarding/loading-plan')} title="Continuer" />
+          <AnimatedNextButton onPress={() => router.push('/onboarding/loading-plan')} title="Voir mon plan" />
         </View>
       </OnboardingContainer>
     </SafeAreaView>

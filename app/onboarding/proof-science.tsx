@@ -1,3 +1,4 @@
+import { NativeModulesProxy } from 'expo-modules-core';
 import { router } from 'expo-router';
 
 import { OnboardingMessageScreen } from '@/components/onboarding/OnboardingMessageScreen';
@@ -15,6 +16,21 @@ export default function OnboardingProofScienceScreen() {
   const { dailyTime } = useOnboardingFlow();
   const minutes = displayDailyMinutes(dailyTime);
 
+  const handleContinue = async () => {
+    try {
+      if (NativeModulesProxy.ExpoStoreReview) {
+        const StoreReview = await import('expo-store-review');
+        if (await StoreReview.hasAction()) {
+          await StoreReview.requestReview();
+        }
+      }
+    } catch {
+      // The native module is unavailable until the dev-client is rebuilt.
+    } finally {
+      router.push('/onboarding/social-proof');
+    }
+  };
+
   return (
     <OnboardingMessageScreen
       progress={getOnboardingProgress('proof_science')}
@@ -23,8 +39,7 @@ export default function OnboardingProofScienceScreen() {
       imageSource={require('@/assets/images/progression-francais.png')}
       imageAspectRatio={1536 / 1024}
       onBack={() => router.back()}
-      onNext={() => router.push('/onboarding/social-proof')}
-      nextLabel="Voir mon plan"
+      onNext={handleContinue}
     />
   );
 }
