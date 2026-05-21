@@ -53,7 +53,7 @@ export function coercePlayableFret(raw: unknown): number {
 }
 
 function coerceUiLanguage(raw: unknown): UiLanguage | null {
-  if (raw === 'fr') {
+  if (raw === 'fr' || raw === 'en' || raw === 'es' || raw === 'it' || raw === 'de') {
     return raw;
   }
   return null;

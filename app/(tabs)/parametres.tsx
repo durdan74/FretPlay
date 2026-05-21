@@ -4,6 +4,7 @@ import React from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { NotationSystem } from '@/app/(tabs)/bass/constants';
+import { LanguageCombo } from '@/components/OnboardingLanguageCombo';
 import { useNotation } from '@/contexts/notation-context';
 import { usePurchases } from '@/contexts/purchases-context';
 import { MAX_PLAYABLE_FRET, MIN_PLAYABLE_FRET } from '@/storage/appSettings';
@@ -147,12 +148,12 @@ export default function ParametresScreen() {
 
   const handleLogout = () => {
     Alert.alert(
-      'Déconnexion',
-      'En vous déconnectant, vous repasserez par l’onboarding et un bouton "Restaurer les achats" apparaîtra pour vous reconnecter.',
+      t('settingsLogoutTitle'),
+      t('settingsLogoutBody'),
       [
-        { text: 'Annuler', style: 'cancel' },
+        { text: t('settingsLogoutCancel'), style: 'cancel' },
         {
-          text: 'Se déconnecter',
+          text: t('settingsLogoutAction'),
           style: 'destructive',
           onPress: () => {
             void (async () => {
@@ -186,6 +187,24 @@ export default function ParametresScreen() {
       <Text style={{ fontSize: 30, fontWeight: '700', marginBottom: 18, color: '#1a2432', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
         {t('parametresTitle')}
       </Text>
+
+      <View
+        style={{
+          marginBottom: 18,
+          borderRadius: 18,
+          borderWidth: 1,
+          borderColor: '#dce7f4',
+          backgroundColor: '#f7fbff',
+          paddingHorizontal: 14,
+          paddingTop: 14,
+          paddingBottom: 10,
+        }}
+      >
+        <Text style={{ fontSize: 17, fontWeight: '600', marginBottom: 8, color: '#2a3a50', fontFamily: fontsLoaded ? 'Manrope_600SemiBold' : undefined }}>
+          {t('parametresLanguageTitle')}
+        </Text>
+        <LanguageCombo />
+      </View>
 
       <View
         style={{
@@ -313,7 +332,7 @@ export default function ParametresScreen() {
         }}
       >
         <Text style={{ color: '#b91c1c', fontSize: 16, fontWeight: '700', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
-          Se déconnecter
+          {t('settingsLogoutAction')}
         </Text>
       </Pressable>
     </ScrollView>

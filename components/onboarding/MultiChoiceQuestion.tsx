@@ -4,6 +4,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors } from '@/constants/theme';
+import { useNotation } from '@/contexts/notation-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import { OnboardingContainer } from './OnboardingContainer';
@@ -29,6 +30,7 @@ export function MultiChoiceQuestion({
   onContinue: (selectedIndexes: number[]) => void;
   maxSelections?: number;
 }) {
+  const { t } = useNotation();
   const colorScheme = useColorScheme() ?? 'light';
   const palette = Colors[colorScheme];
   const subtitleColor = palette.textMuted ?? ONBOARDING_COLORS.textSecondary;
@@ -105,7 +107,7 @@ export function MultiChoiceQuestion({
 
         <View style={{ paddingHorizontal: 20, paddingBottom: 10, paddingTop: 6 }}>
           <PrimaryButton
-            title="Continuer"
+            title={t('onboardingContinue')}
             disabled={selectedSet.size === 0}
             palette={uiPalette}
             labelFontFamily={fontsLoaded ? 'Manrope_700Bold' : undefined}

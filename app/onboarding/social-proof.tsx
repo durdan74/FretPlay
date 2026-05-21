@@ -8,6 +8,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AnimatedNextButton } from '@/components/onboarding/AnimatedNextButton';
 import { OnboardingContainer } from '@/components/onboarding/OnboardingContainer';
 import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
+import { useNotation } from '@/contexts/notation-context';
 import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
@@ -126,6 +127,7 @@ function TestimonialCard({ item, fontsLoaded }: { item: Testimonial; fontsLoaded
 export default function OnboardingSocialProofScreen() {
   const insets = useSafeAreaInsets();
   const { segment } = useOnboardingFlow();
+  const { t } = useNotation();
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
     Manrope_700Bold,
@@ -151,7 +153,7 @@ export default function OnboardingSocialProofScreen() {
                 fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
               }}
             >
-              Rejoins des milliers de bassistes comme toi sur FretPlay !
+              {t('onboardingSocialTitle')}
             </Text>
 
             <Text
@@ -164,7 +166,7 @@ export default function OnboardingSocialProofScreen() {
                 marginBottom: 12,
               }}
             >
-              96% des utilisateurs réguliers voient une progression mesurable en 3 semaines.
+              {t('onboardingSocialBody')}
             </Text>
           </View>
 
@@ -181,7 +183,7 @@ export default function OnboardingSocialProofScreen() {
         </View>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 10 }}>
-          <AnimatedNextButton onPress={() => router.push('/onboarding/loading-plan')} title="Voir mon plan" />
+          <AnimatedNextButton onPress={() => router.push('/onboarding/loading-plan')} title={t('onboardingSocialCta')} />
         </View>
       </OnboardingContainer>
     </SafeAreaView>

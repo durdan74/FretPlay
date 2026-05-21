@@ -1,14 +1,17 @@
 import { router } from 'expo-router';
 
 import { OnboardingMessageScreen } from '@/components/onboarding/OnboardingMessageScreen';
+import { useNotation } from '@/contexts/notation-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
 export default function OnboardingSegAmateurScreen() {
+  const { t } = useNotation();
+
   return (
     <OnboardingMessageScreen
       progress={getOnboardingProgress('seg_amateur')}
-      title="Super ! C'est le moment idéal pour structurer ce que tu sais déjà."
-      description="C'est le moment idéal pour structurer ce que tu sais déjà et franchir le cap qui te sépare du niveau supérieur."
+      title={t('onboardingSegAmateurTitle')}
+      description={t('onboardingSegAmateurBody')}
       imageSource={require('@/assets/images/super-francais.png')}
       imageHeight={240}
       imageContentFit="contain"

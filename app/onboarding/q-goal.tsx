@@ -1,30 +1,31 @@
 import { router } from 'expo-router';
 
 import { SingleChoiceQuestion } from '@/components/onboarding/SingleChoiceQuestion';
+import { useNotation } from '@/contexts/notation-context';
 import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
-const GOAL_OPTIONS = [
-  'Communiquer plus facilement avec les autres musiciens',
-  'Mieux comprendre les tutoriels de bassiste',
-  'Jouer sur scène',
-  'Devenir pro',
-  'M’amuser et rester régulier',
-  'Consolider mes acquis',
-] as const;
-
 export default function OnboardingGoalScreen() {
   const { setGoal } = useOnboardingFlow();
+  const { t } = useNotation();
+  const options = [
+    t('onboardingGoal0'),
+    t('onboardingGoal1'),
+    t('onboardingGoal2'),
+    t('onboardingGoal3'),
+    t('onboardingGoal4'),
+    t('onboardingGoal5'),
+  ] as const;
 
   return (
     <SingleChoiceQuestion
-      title="Quel est ton objectif principal ?"
-      description="Choisis la réponse qui te correspond le plus."
-      options={GOAL_OPTIONS}
+      title={t('onboardingGoalTitle')}
+      description={t('onboardingGoalDescription')}
+      options={options}
       progress={getOnboardingProgress('q_goal')}
       onBack={() => router.back()}
       onSelect={(index) => {
-        setGoal(GOAL_OPTIONS[index] ?? GOAL_OPTIONS[0]);
+        setGoal(options[index] ?? options[0]);
         router.push('/onboarding/q-learning-style');
       }}
     />

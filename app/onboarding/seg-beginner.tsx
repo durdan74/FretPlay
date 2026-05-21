@@ -1,14 +1,17 @@
 import { router } from 'expo-router';
 
 import { OnboardingMessageScreen } from '@/components/onboarding/OnboardingMessageScreen';
+import { useNotation } from '@/contexts/notation-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
 export default function OnboardingSegBeginnerScreen() {
+  const { t } = useNotation();
+
   return (
     <OnboardingMessageScreen
       progress={getOnboardingProgress('seg_beginner')}
-      title="Super ! Tu verras des progrès rapidement."
-      description="Fretplay est pensé pour les débutants — tu vas poser des bases solides dès le départ, sans prendre de mauvaises habitudes."
+      title={t('onboardingSegBeginnerTitle')}
+      description={t('onboardingSegBeginnerBody')}
       imageSource={require('@/assets/images/super-francais.png')}
       imageHeight={240}
       imageContentFit="contain"

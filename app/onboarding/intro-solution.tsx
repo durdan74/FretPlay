@@ -1,14 +1,17 @@
 import { router } from 'expo-router';
 
 import { OnboardingMessageScreen } from '@/components/onboarding/OnboardingMessageScreen';
+import { useNotation } from '@/contexts/notation-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
 export default function OnboardingIntroSolutionScreen() {
+  const { t } = useNotation();
+
   return (
     <OnboardingMessageScreen
       progress={getOnboardingProgress('intro_solution')}
-      title="FretPlay, c'est quelques minutes. Pas plus."
-      description="Des mini-jeux pensés pour ancrer les notes du manche dans ta mémoire, avec un feedback immédiat à chaque réponse. Les notes deviennent naturelles et tu progresseras vite."
+      title={t('onboardingIntroSolutionTitle')}
+      description={t('onboardingIntroSolutionBody')}
       imageSource={require('@/assets/images/avantages-desavantages-francais.png')}
       imageAspectRatio={1360 / 1263}
       onBack={() => router.back()}

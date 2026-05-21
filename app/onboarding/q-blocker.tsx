@@ -1,31 +1,32 @@
 import { router } from 'expo-router';
 
 import { MultiChoiceQuestion } from '@/components/onboarding/MultiChoiceQuestion';
+import { useNotation } from '@/contexts/notation-context';
 import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
-const BLOCKERS_OPTIONS = [
-  'Le rythme',
-  'Trop de choses à penser en même temps',
-  "Je me concentre sur une main, l'autre suit mal",
-  'Je connais un peu la théorie, mais je cherche encore les notes',
-  'Je manque de régularité',
-  'Je perds mes moyens en condition réelle (jam/scène)',
-] as const;
-
 export default function OnboardingBlockerScreen() {
   const { setBlockers } = useOnboardingFlow();
+  const { t } = useNotation();
+  const options = [
+    t('onboardingBlocker0'),
+    t('onboardingBlocker1'),
+    t('onboardingBlocker2'),
+    t('onboardingBlocker3'),
+    t('onboardingBlocker4'),
+    t('onboardingBlocker5'),
+  ] as const;
 
   return (
     <MultiChoiceQuestion
-      title="Qu’est-ce qui te bloque le plus quand tu joues ?"
-      description="Choisis la difficulté principale qui te freine aujourd’hui."
-      options={BLOCKERS_OPTIONS}
+      title={t('onboardingBlockerTitle')}
+      description={t('onboardingBlockerDescription')}
+      options={options}
       progress={getOnboardingProgress('q_blocker')}
       onBack={() => router.back()}
       maxSelections={3}
       onContinue={(indexes) => {
-        setBlockers(indexes.map((i) => BLOCKERS_OPTIONS[i] ?? '').filter(Boolean));
+        setBlockers(indexes.map((i) => options[i] ?? '').filter(Boolean));
         router.push('/onboarding/q-note-learning');
       }}
     />

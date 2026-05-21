@@ -1,14 +1,17 @@
 import { router } from 'expo-router';
 
 import { OnboardingMessageScreen } from '@/components/onboarding/OnboardingMessageScreen';
+import { useNotation } from '@/contexts/notation-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
 export default function OnboardingIntroProblemScreen() {
+  const { t } = useNotation();
+
   return (
     <OnboardingMessageScreen
       progress={getOnboardingProgress('intro_problem')}
-      title="Tu joues, mais tu ne connais pas tes notes sur le manche."
-      description="Je te rassures, tu es loin d'être le seul ! Beaucoup de bassistes ne connaissent pas leurs notes sur le manche. Et pourtant, c'est une compétence essentielle pour jouer de la basse."
+      title={t('onboardingIntroProblemTitle')}
+      description={t('onboardingIntroProblemBody')}
       imageSource={require('@/assets/images/onboarding-basse-with-question.png')}
       imageAspectRatio={1544 / 886}
       onBack={() => router.back()}

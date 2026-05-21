@@ -9,12 +9,13 @@ import { OnboardingContainer } from '@/components/onboarding/OnboardingContainer
 import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
 import { useNotation } from '@/contexts/notation-context';
 import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
+import type { TranslationKey } from '@/lib/i18n/strings';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
-function resultDelay(segment: string | null): string {
-  if (segment === 'Débutant') return 'Tu devrais voir tes premiers résultats en 21 jours.';
-  if (segment === 'Amateur') return 'Tu devrais voir tes premiers résultats en 30 jours.';
-  return 'Tu devrais voir tes premiers résultats en 45 jours.';
+function resultDelayKey(segment: string | null): TranslationKey {
+  if (segment === 'Débutant') return 'onboardingSummaryDelayBeginner';
+  if (segment === 'Amateur') return 'onboardingSummaryDelayAmateur';
+  return 'onboardingSummaryDelayPro';
 }
 
 export default function OnboardingPlanSummaryScreen() {
@@ -23,12 +24,12 @@ export default function OnboardingPlanSummaryScreen() {
     Manrope_700Bold,
   });
   const { blockers, dailyTime, goal, segment, resetFlow } = useOnboardingFlow();
-  const { completeOnboarding } = useNotation();
+  const { completeOnboarding, t } = useNotation();
 
-  const firstBlocker = blockers?.[0] ?? 'Ta difficulté principale';
-  const rhythm = dailyTime ?? '10 min';
-  const mainGoal = goal ?? 'Progresser';
-  const level = segment ?? 'Amateur';
+  const firstBlocker = blockers?.[0] ?? t('onboardingSummaryFallbackBlocker');
+  const rhythm = dailyTime ?? t('onboardingPlan10Min');
+  const mainGoal = goal ?? t('onboardingSummaryFallbackGoal');
+  const level = segment ?? t('onboardingSummaryFallbackLevel');
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }} edges={['top', 'bottom']}>
@@ -37,7 +38,7 @@ export default function OnboardingPlanSummaryScreen() {
           <OnboardingHeader progress={getOnboardingProgress('plan_summary')} onBack={() => router.back()} />
 
           <Text style={{ fontSize: 30, lineHeight: 37, color: '#161e29', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
-            Ton plan est prêt.
+            {t('onboardingSummaryReadyTitle')}
           </Text>
           <Text
             style={{
@@ -48,7 +49,7 @@ export default function OnboardingPlanSummaryScreen() {
               fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined,
             }}
           >
-            Basé sur tes réponses, voici ce qu’on a préparé pour toi :
+            {t('onboardingSummaryReadyBody')}
           </Text>
 
           <View
@@ -62,10 +63,10 @@ export default function OnboardingPlanSummaryScreen() {
               gap: 9,
             }}
           >
-            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>🎯 Focus : {firstBlocker}</Text>
-            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>⏱️ Rythme : {rhythm} par jour</Text>
-            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>📈 Objectif : {mainGoal}</Text>
-            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>🎸 Niveau : {level}</Text>
+            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>🎯 {t('onboardingSummaryFocus')} : {firstBlocker}</Text>
+            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>⏱️ {t('onboardingSummaryRhythm')} : {rhythm} {t('onboardingSummaryPerDay')}</Text>
+            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>📈 {t('onboardingSummaryGoal')} : {mainGoal}</Text>
+            <Text style={{ fontSize: 16, color: '#1f2b39', fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>🎸 {t('onboardingSummaryLevel')} : {level}</Text>
           </View>
 
           <Text
@@ -77,7 +78,7 @@ export default function OnboardingPlanSummaryScreen() {
               fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
             }}
           >
-            {resultDelay(segment)}
+            {t(resultDelayKey(segment))}
           </Text>
         </View>
 
@@ -88,7 +89,7 @@ export default function OnboardingPlanSummaryScreen() {
               resetFlow?.();
               router.replace('/(tabs)');
             }}
-            title="Commencer"
+            title={t('landingCta')}
           />
         </View>
       </OnboardingContainer>

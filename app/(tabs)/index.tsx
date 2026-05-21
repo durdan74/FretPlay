@@ -206,10 +206,10 @@ export default function Index() {
             }}
           >
             <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: '#5f6f83', fontSize: 10, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
-              Série
+              {t('homeStatsStreak')}
             </Text>
             <Text style={{ marginTop: 2, color: '#1c2430', fontSize: 19, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
-              {streak} j
+              {streak} {t('homeStatsDayShort')}
             </Text>
           </View>
           <View
@@ -224,7 +224,7 @@ export default function Index() {
             }}
           >
             <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: '#5f6f83', fontSize: 10, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
-              7 derniers jours
+              {t('homeStats7Days')}
             </Text>
             <Text style={{ marginTop: 2, color: '#1c2430', fontSize: 19, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
               {weeklySessions}
@@ -242,7 +242,7 @@ export default function Index() {
             }}
           >
             <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: '#5f6f83', fontSize: 10, fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined }}>
-              Total
+              {t('homeStatsTotal')}
             </Text>
             <Text style={{ marginTop: 2, color: '#1c2430', fontSize: 19, fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined }}>
               {totalSessions}

@@ -1,31 +1,32 @@
 import { router } from 'expo-router';
 
 import { SingleChoiceQuestion } from '@/components/onboarding/SingleChoiceQuestion';
+import { useNotation } from '@/contexts/notation-context';
 import { useOnboardingFlow, type OnboardingSegment } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
-const EXPERIENCE_OPTIONS = [
-  'Je viens de débuter',
-  'Depuis quelques semaines',
-  'Depuis moins de 6 mois',
-  'Depuis 1 an',
-  'Depuis quelques années',
-  'Depuis une décennie',
-  'Depuis toujours',
-] as const;
-
 export default function OnboardingExperienceScreen() {
   const { setExperience, setSegment } = useOnboardingFlow();
+  const { t } = useNotation();
+  const options = [
+    t('onboardingExperience0'),
+    t('onboardingExperience1'),
+    t('onboardingExperience2'),
+    t('onboardingExperience3'),
+    t('onboardingExperience4'),
+    t('onboardingExperience5'),
+    t('onboardingExperience6'),
+  ] as const;
 
   return (
     <SingleChoiceQuestion
-      title="Depuis combien de temps joues-tu de la basse ?"
-      description="Choisis une réponse. On utilisera cette base pour la suite du parcours."
-      options={EXPERIENCE_OPTIONS}
+      title={t('onboardingExperienceTitle')}
+      description={t('onboardingExperienceDescription')}
+      options={options}
       progress={getOnboardingProgress('q_experience')}
       onBack={() => router.back()}
       onSelect={(index) => {
-        setExperience(EXPERIENCE_OPTIONS[index] ?? EXPERIENCE_OPTIONS[0]);
+        setExperience(options[index] ?? options[0]);
         let segment: OnboardingSegment = 'Avancé';
         if (index <= 2) {
           segment = 'Débutant';

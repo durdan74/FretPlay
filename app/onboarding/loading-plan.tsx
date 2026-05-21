@@ -5,18 +5,24 @@ import { Animated, BackHandler, Easing, ScrollView, Text, View } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { OnboardingLanguageCombo } from '@/components/OnboardingLanguageCombo';
 import { OnboardingContainer } from '@/components/onboarding/OnboardingContainer';
+import { useNotation } from '@/contexts/notation-context';
 
-const STEPS = [
-  'Analyse de ton profil...',
-  'Calibration de la difficulté...',
-  'Sélection des exercices adaptés...',
-  'Création de ton plan personnalisé...',
-] as const;
 const PROGRESS_DURATION_MS = 6000;
 const MESSAGE_DURATION_MS = 1500;
 
 export default function OnboardingLoadingPlanScreen() {
+  const { t } = useNotation();
+  const steps = React.useMemo(
+    () => [
+      t('onboardingLoadingStep0'),
+      t('onboardingLoadingStep1'),
+      t('onboardingLoadingStep2'),
+      t('onboardingLoadingStep3'),
+    ],
+    [t],
+  );
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
     Manrope_600SemiBold,
@@ -47,7 +53,7 @@ export default function OnboardingLoadingPlanScreen() {
   }, [progressAnim]);
 
   React.useEffect(() => {
-    if (index >= STEPS.length - 1) return;
+    if (index >= steps.length - 1) return;
     const timer = setTimeout(() => {
       Animated.timing(messageOpacity, {
         toValue: 0,
@@ -55,7 +61,7 @@ export default function OnboardingLoadingPlanScreen() {
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }).start(() => {
-        setIndex((v) => Math.min(v + 1, STEPS.length - 1));
+        setIndex((v) => Math.min(v + 1, steps.length - 1));
         Animated.timing(messageOpacity, {
           toValue: 1,
           duration: 150,
@@ -65,7 +71,7 @@ export default function OnboardingLoadingPlanScreen() {
       });
     }, MESSAGE_DURATION_MS);
     return () => clearTimeout(timer);
-  }, [index, messageOpacity]);
+  }, [index, messageOpacity, steps.length]);
 
   React.useEffect(() => {
     const pulse = Animated.loop(
@@ -97,6 +103,10 @@ export default function OnboardingLoadingPlanScreen() {
           end={{ x: 0, y: 1 }}
           style={{ flex: 1 }}
         >
+          <View style={{ position: 'absolute', top: 20, right: 20, zIndex: 2 }}>
+            <OnboardingLanguageCombo />
+          </View>
+
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
@@ -128,7 +138,7 @@ export default function OnboardingLoadingPlanScreen() {
                   fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
                 }}
               >
-                Préparation de ton plan
+                {t('onboardingLoadingTitle')}
               </Text>
               <Text
                 style={{
@@ -140,7 +150,7 @@ export default function OnboardingLoadingPlanScreen() {
                   fontFamily: fontsLoaded ? 'Manrope_400Regular' : undefined,
                 }}
               >
-                On personnalise ton parcours pour te faire gagner du temps dès les premières sessions.
+                {t('onboardingLoadingBody')}
               </Text>
             </View>
 
@@ -163,7 +173,7 @@ export default function OnboardingLoadingPlanScreen() {
                   fontFamily: fontsLoaded ? 'Manrope_600SemiBold' : undefined,
                 }}
               >
-                Analyse en cours
+                {t('onboardingLoadingStatus')}
               </Text>
 
               <Animated.Text
@@ -175,7 +185,7 @@ export default function OnboardingLoadingPlanScreen() {
                   fontFamily: fontsLoaded ? 'Manrope_700Bold' : undefined,
                 }}
               >
-                {STEPS[index]}
+                {steps[index]}
               </Animated.Text>
 
               <View
@@ -205,7 +215,7 @@ export default function OnboardingLoadingPlanScreen() {
               </View>
 
               <View style={{ gap: 12 }}>
-                {STEPS.map((step, idx) => {
+                {steps.map((step, idx) => {
                   const isActive = idx === index;
                   const isDone = idx < index;
                   return (

@@ -1,29 +1,30 @@
 import { router } from 'expo-router';
 
 import { MultiChoiceQuestion } from '@/components/onboarding/MultiChoiceQuestion';
+import { useNotation } from '@/contexts/notation-context';
 import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
-const NOTE_LEARNING_OPTIONS = [
-  'Je ne les travaille pas vraiment',
-  'Je joue des morceaux en espérant les retenir',
-  "Je fais des exercices d'apprentissage de notes",
-  "J'essaie d'imprimer visuellement les notes sur le manche",
-  'Autre',
-] as const;
-
 export default function OnboardingNoteLearningScreen() {
   const { setNoteLearning } = useOnboardingFlow();
+  const { t } = useNotation();
+  const options = [
+    t('onboardingNoteLearning0'),
+    t('onboardingNoteLearning1'),
+    t('onboardingNoteLearning2'),
+    t('onboardingNoteLearning3'),
+    t('onboardingNoteLearning4'),
+  ] as const;
 
   return (
     <MultiChoiceQuestion
-      title="Comment apprends-tu tes notes aujourd’hui ?"
-      description="Tu peux sélectionner plusieurs options."
-      options={NOTE_LEARNING_OPTIONS}
+      title={t('onboardingNoteLearningTitle')}
+      description={t('onboardingNoteLearningDescription')}
+      options={options}
       progress={getOnboardingProgress('q_note_learning')}
       onBack={() => router.back()}
       onContinue={(indexes) => {
-        setNoteLearning(indexes.map((i) => NOTE_LEARNING_OPTIONS[i] ?? '').filter(Boolean));
+        setNoteLearning(indexes.map((i) => options[i] ?? '').filter(Boolean));
         router.push('/onboarding/q-goal');
       }}
     />

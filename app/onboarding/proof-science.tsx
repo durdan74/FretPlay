@@ -2,7 +2,9 @@ import { NativeModulesProxy } from 'expo-modules-core';
 import { router } from 'expo-router';
 
 import { OnboardingMessageScreen } from '@/components/onboarding/OnboardingMessageScreen';
+import { useNotation } from '@/contexts/notation-context';
 import { useOnboardingFlow } from '@/contexts/onboarding-flow-context';
+import { fillTemplate } from '@/lib/i18n/template';
 import { getOnboardingProgress } from '@/utils/onboardingProgress';
 
 function displayDailyMinutes(value: string | null): string {
@@ -14,6 +16,7 @@ function displayDailyMinutes(value: string | null): string {
 
 export default function OnboardingProofScienceScreen() {
   const { dailyTime } = useOnboardingFlow();
+  const { t } = useNotation();
   const minutes = displayDailyMinutes(dailyTime);
 
   const handleContinue = async () => {
@@ -34,8 +37,8 @@ export default function OnboardingProofScienceScreen() {
   return (
     <OnboardingMessageScreen
       progress={getOnboardingProgress('proof_science')}
-      title={`Super ! ${minutes} min par jour, c’est tout ce qu’il te faut pour progresser.`}
-      description="10 minutes quotidiennes font progresser 3x plus que 2h le week-end. C'est le principe de la répétition espacée, utilisé par les meilleures méthodes d'apprentissage."
+      title={fillTemplate(t('onboardingProofTitle'), { minutes })}
+      description={t('onboardingProofBody')}
       imageSource={require('@/assets/images/progression-francais.png')}
       imageAspectRatio={1536 / 1024}
       onBack={() => router.back()}

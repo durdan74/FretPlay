@@ -9,6 +9,7 @@ import { ONBOARDING_COLORS } from './theme';
 import { AnimatedNextButton } from './AnimatedNextButton';
 import { OnboardingContainer } from './OnboardingContainer';
 import { OnboardingHeader } from './OnboardingHeader';
+import { useNotation } from '@/contexts/notation-context';
 
 export function OnboardingMessageScreen({
   progress,
@@ -16,7 +17,7 @@ export function OnboardingMessageScreen({
   description,
   onBack,
   onNext,
-  nextLabel = 'Continuer',
+  nextLabel,
   disableBack = false,
   imageSource,
   imageAspectRatio = 1,
@@ -35,6 +36,7 @@ export function OnboardingMessageScreen({
   imageHeight?: number;
   imageContentFit?: 'cover' | 'contain';
 }) {
+  const { t } = useNotation();
   const [fontsLoaded] = useFonts({
     Manrope_400Regular,
     Manrope_700Bold,
@@ -115,7 +117,7 @@ export function OnboardingMessageScreen({
         </ScrollView>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 10 }}>
-          <AnimatedNextButton onPress={onNext} title={nextLabel} />
+          <AnimatedNextButton onPress={onNext} title={nextLabel ?? t('onboardingContinue')} />
         </View>
       </OnboardingContainer>
     </SafeAreaView>
